@@ -1,6 +1,5 @@
 #include "raylib.h"
 #include "Globals.h"
-#include "main.h"
 #include <chrono>
 #include <iostream>
 
