@@ -306,7 +306,6 @@ int main(void)
 		//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 		//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [millis]" << std::endl;
 
-
 		countFrames++;
 		if (countFrames == 1024)
 			countFrames = 0;
