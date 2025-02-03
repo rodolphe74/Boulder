@@ -15,7 +15,7 @@ map::Sprite MapUtils::downRockford0, MapUtils::downRockford1, MapUtils::downRock
 map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRockford2;
 map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
 
-map::Sprite *MapUtils::matchSprite[7];
+map::Sprite *MapUtils::matchSprite[9];
 map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[7];
 Texture2D MapUtils::tiles;
 RenderTexture2D MapUtils::mapCache;
@@ -121,12 +121,98 @@ void MapUtils::moveStone()
 	}
 }
 
+int MapUtils::getType(int x, int y)
+{
+	return map[y][x].type;
+}
+
+int MapUtils::isEmpty(int x, int y)
+{
+	if (y < TILES_DISPLAY_HEIGHT - 1 && map[y + 1][x].type == SPACE) {
+		return 1;
+	}
+	return 0;
+}
+
+void MapUtils::unmarkRocks()
+{
+	for (int y = 0; y < MAP_HEIGHT - 1; y++) {
+		for (int x = 0; x < MAP_WIDTH; x++) {
+			if (map[y][x].type == ROCK) {
+				map[y][x].mark = 0;
+			}
+		}
+	}
+}
+
+int MapUtils::canShift(int x, int y)
+{
+	if ((x > 0 && map[y][x - 1].type == SPACE) || (x < TILES_DISPLAY_WIDTH - 1 && map[y][x + 1].type == SPACE)) {
+		return 1;
+	}
+	return 0;
+}
+
+void MapUtils::move(int x, int y, int direction)
+{
+	map[y][x].type = SPACE;
+	switch (direction) {
+	case LEFT:
+		map[y][x - 1] = map[y][x];
+		break;
+	case RIGHT:
+		map[y][x + 1] = map[y][x];
+		break;
+	case UP:
+		map[y - 1][x] = map[y][x];
+		break;
+	case DOWN:
+		map[y + 1][x] = map[y][x];
+		break;
+	default:
+		break;
+	}
+}
+
+
+
+void MapUtils::scanBoulders(int x, int y)
+{
+	if (map[y][x].type == ROCK && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE) && map[y][x].falling == STATIONARY) {
+		map[y][x].falling = FALL;
+	}
+
+	if (map[y][x].type == ROCK && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
+		map[y][x].falling = STATIONARY;
+	}
+}
+
+void MapUtils::updateFallingBoulders(int x, int y)
+{
+	if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == FALL) {
+
+		if (map[y + 1][x].type == ROCKFORD) {
+			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
+		}
+
+		map[y + 1][x].type = map[y][x].type;
+		map[y + 1][x].falling = FALL;
+		map[y + 1][x].mark = 1;
+		map[y][x].type = SPACE;
+		map[y][x].falling = STATIONARY;
+	}
+}
 
 
 MapUtils::MapUtils()
 {
 	tiles = LoadTexture("Resources/tileset.png");
 	mapCache = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+	for (int y = 0; y < TILES_DISPLAY_HEIGHT; y++) {
+		for (int x = 0; x < TILES_DISPLAY_WIDTH; x++) {
+			map[y][x].falling = STATIONARY;
+		}
+	}
 }
 
 MapUtils *MapUtils::getInstance()
@@ -154,13 +240,15 @@ void MapUtils::cutTilesSheet()
 	rock = { 16 * 3, 16 * 8, 16, 16, 0, &tiles };
 	rockFord = { 16 * 0, 16 * 0, 16, 16, 1, &tiles };
 
-	matchSprite[0] = &bigWall;
-	matchSprite[1] = &wall;
-	matchSprite[2] = &grass;
-	matchSprite[3] = &space;
-	matchSprite[4] = &diamond;
-	matchSprite[5] = &rock;
-	matchSprite[6] = &rockFord;
+	matchSprite[BIGWALL] = &bigWall;
+	matchSprite[WALL] = &wall;
+	matchSprite[GRASS] = &grass;
+	matchSprite[SPACE] = &space;
+	matchSprite[DIAMOND] = &diamond;
+	matchSprite[ROCK] = &rock;
+	matchSprite[ROCKFORD] = &rockFord;
+	matchSprite[TRANSITIONAL_SPACE] = &space;
+	matchSprite[TRANSITIONAL_ROCKFORD] = &space;
 
 
 	countX = 0;

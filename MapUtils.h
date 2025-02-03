@@ -23,6 +23,7 @@
 
 #define STATIONARY 0
 #define FALL 1
+#define FALLED 2
 
 #define BIGWALL 0
 #define WALL 1
@@ -31,6 +32,8 @@
 #define DIAMOND 4
 #define ROCK 5
 #define ROCKFORD 6
+#define TRANSITIONAL_SPACE 7
+#define TRANSITIONAL_ROCKFORD 8
 
 namespace map {
 	struct Sprite {
@@ -44,6 +47,7 @@ namespace map {
 	struct Object {
 		uint8_t type;
 		uint8_t falling;
+		uint8_t mark;
 	};
 	typedef struct Object Object;
 
@@ -75,7 +79,7 @@ public:
 	static map::Sprite rightRockford0, rightRockford1, rightRockford2;
 	static map::Object map[MAP_HEIGHT][MAP_WIDTH];
 	static map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
-	static map::Sprite *matchSprite[7];
+	static map::Sprite *matchSprite[9];
 	static map::MatchAnimatedSprite matchAnimatedSprite[7];
 
 	void cutTilesSheet();
@@ -84,4 +88,11 @@ public:
 	int checkMove();
 	int checkPush();
 	void moveStone();
+	int getType(int x, int y);
+	int isEmpty(int x, int y);
+	void unmarkRocks();
+	int canShift(int x, int y);
+	void move(int x, int y, int direction);
+	void scanBoulders(int x, int y);
+	void updateFallingBoulders(int x, int y);
 };

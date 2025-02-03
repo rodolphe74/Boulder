@@ -31,17 +31,28 @@ void keyPressed()
 	}
 }
 
+void doFalls() {
+	mapUtils->unmarkRocks();
+	for (int y = 0; y < MAP_HEIGHT - 1; y++) {
+		for (int x = 0; x < MAP_WIDTH; x++) {
+			mapUtils->scanBoulders(x, y);
+			mapUtils->updateFallingBoulders(x, y);
+		}
+	}
+}
+
 void prepareScroll()
 {
 	if (currentDirection) {
 		rockfordAnimFlag = 1;
 		previousRockFordX = rockFordX;
 		previousRockFordY = rockFordY;
-		mapUtils->map[previousRockFordY][previousRockFordX].type = SPACE;
+		mapUtils->map[previousRockFordY][previousRockFordX].type = TRANSITIONAL_SPACE;
 		//mapUtils->map[previousRockFordY][previousRockFordX + 1].type = SPACE;
 	}
 	if (currentDirection == RIGHT) {
 		rockFordX++;
+		mapUtils->map[rockFordY][rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (visibleX > TILES_DISPLAY_WIDTH - SCROLL_BORDER) {
 			if (countX < MAP_WIDTH - TILES_DISPLAY_WIDTH) {
 				scrollFlag = 1;
@@ -58,6 +69,7 @@ void prepareScroll()
 	}
 	else if (currentDirection == LEFT) {
 		rockFordX--;
+		mapUtils->map[rockFordY][rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (visibleX < SCROLL_BORDER - 1) {
 			if (countX) {
 				scrollFlag = 1;
@@ -74,6 +86,7 @@ void prepareScroll()
 	}
 	else if (currentDirection == UP) {
 		rockFordY--;
+		mapUtils->map[rockFordY][rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (visibleY < SCROLL_BORDER - 1) {
 			if (countY) {
 				scrollFlag = 1;
@@ -90,6 +103,7 @@ void prepareScroll()
 	}
 	else if (currentDirection == DOWN) {
 		rockFordY++;
+		mapUtils->map[rockFordY][rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (visibleY > TILES_DISPLAY_HEIGHT - SCROLL_BORDER) {
 			if (countY < MAP_HEIGHT - TILES_DISPLAY_HEIGHT) {
 				scrollFlag = 1;
@@ -116,7 +130,6 @@ void animate()
 			currentDirection = 0;
 			keyFlag = 1;
 		}
-		rockfordAnimFlag = 1;
 	}
 	else if (currentDirection == LEFT) {
 		shiftX -= ZOOM;
@@ -127,7 +140,6 @@ void animate()
 			currentDirection = 0;
 			keyFlag = 1;
 		}
-		rockfordAnimFlag = 1;
 	}
 	else if (currentDirection == UP) {
 		shiftY -= ZOOM;
@@ -225,12 +237,16 @@ void animateRockford()
 	}
 
 	if (rockfordShift == TILE_SIZE) {
+		mapUtils->map[previousRockFordY][previousRockFordX].type = SPACE;
 		mapUtils->map[rockFordY][rockFordX].type = ROCKFORD;
 		rockfordAnimFlag = 0;
 		rockfordShift = 0;
 		keyFlag = 1;
 		currentDirection = 0;
 		scrollFlag = 0;
+
+		doFalls();
+
 		mapUtils->drawMap();
 	}
 	else {
@@ -296,6 +312,10 @@ int main(void)
 
 		if (rockfordAnimFlag) {
 			animateRockford();
+		}
+
+		if (!rockfordAnimFlag && (countFrames % 16 == 0)) {
+			doFalls();
 		}
 
 		// Game informations
