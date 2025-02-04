@@ -107,6 +107,8 @@ int MapUtils::checkPush()
 		push++;
 		return LEFT;
 	}
+
+	return 0;
 }
 
 void MapUtils::moveStone()
@@ -182,9 +184,18 @@ void MapUtils::scanBoulders(int x, int y)
 		map[y][x].falling = FALL;
 	}
 
-	if (map[y][x].type == ROCK && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
+	if (map[y][x].type == ROCK &&  (x > 0 && map[y][x - 1].type == SPACE && map[y + 1][x - 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
+		map[y][x].falling = ROLL_LEFT;
+	}
+
+	else if (map[y][x].type == ROCK && (x < MAP_WIDTH - 1 && map[y][x + 1].type == SPACE && map[y + 1][x + 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
+		map[y][x].falling = ROLL_RIGHT;
+	}
+
+	else if (map[y][x].type == ROCK && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
 		map[y][x].falling = STATIONARY;
 	}
+
 }
 
 void MapUtils::updateFallingBoulders(int x, int y)
@@ -198,6 +209,22 @@ void MapUtils::updateFallingBoulders(int x, int y)
 		map[y + 1][x].type = map[y][x].type;
 		map[y + 1][x].falling = FALL;
 		map[y + 1][x].mark = 1;
+		map[y][x].type = SPACE;
+		map[y][x].falling = STATIONARY;
+	}
+
+	else if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == ROLL_LEFT) {
+		map[y][x - 1].type = map[y][x].type;
+		map[y][x - 1].falling = FALL;
+		map[y][x - 1].mark = 1;
+		map[y][x].type = SPACE;
+		map[y][x].falling = STATIONARY;
+	}
+
+	else if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == ROLL_RIGHT) {
+		map[y][x + 1].type = map[y][x].type;
+		map[y][x + 1].falling = FALL;
+		map[y][x + 1].mark = 1;
 		map[y][x].type = SPACE;
 		map[y][x].falling = STATIONARY;
 	}

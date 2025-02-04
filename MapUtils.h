@@ -23,7 +23,8 @@
 
 #define STATIONARY 0
 #define FALL 1
-#define FALLED 2
+#define ROLL_LEFT 2
+#define ROLL_RIGHT 3
 
 #define BIGWALL 0
 #define WALL 1
