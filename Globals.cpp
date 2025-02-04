@@ -12,6 +12,7 @@ uint8_t currentDirection = 0;
 uint8_t visibleX = 3;
 uint8_t visibleY = 2;
 uint32_t countFrames = 0;
+uint32_t countFalls = 0;
 uint8_t lastFrame = 0;
 uint8_t lastMoveFrame = 0;
 uint8_t push = 0;

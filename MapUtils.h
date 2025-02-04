@@ -91,9 +91,9 @@ public:
 	void moveStone();
 	int getType(int x, int y);
 	int isEmpty(int x, int y);
-	void unmarkRocks();
+	void unmarkBouldersAndDiamonds();
 	int canShift(int x, int y);
 	void move(int x, int y, int direction);
-	void scanBoulders(int x, int y);
-	void updateFallingBoulders(int x, int y);
+	void scanBouldersAndDiamonds(int x, int y);
+	void updateFallingBouldersAndDiamonds(int x, int y);
 };

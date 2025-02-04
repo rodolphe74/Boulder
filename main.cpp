@@ -32,11 +32,11 @@ void keyPressed()
 }
 
 void doFalls() {
-	mapUtils->unmarkRocks();
+	mapUtils->unmarkBouldersAndDiamonds();
 	for (int y = 0; y < MAP_HEIGHT - 1; y++) {
 		for (int x = 0; x < MAP_WIDTH; x++) {
-			mapUtils->scanBoulders(x, y);
-			mapUtils->updateFallingBoulders(x, y);
+			mapUtils->scanBouldersAndDiamonds(x, y);
+			mapUtils->updateFallingBouldersAndDiamonds(x, y);
 		}
 	}
 }
@@ -244,6 +244,7 @@ void animateRockford()
 		keyFlag = 1;
 		currentDirection = 0;
 		scrollFlag = 0;
+		countFalls = 1;	// if stationnary Rockford, next fall check at countFalls == 16
 
 		doFalls();
 
@@ -314,7 +315,7 @@ int main(void)
 			animateRockford();
 		}
 
-		if (!rockfordAnimFlag && (countFrames % 16 == 0)) {
+		if (!rockfordAnimFlag && (countFalls % 16 == 0)) {
 			doFalls();
 		}
 
@@ -326,6 +327,10 @@ int main(void)
 		//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [millis]" << std::endl;
 
 		countFrames++;
+		if (countFrames == 1024)
+			countFrames = 0;
+
+		countFalls++;
 		if (countFrames == 1024)
 			countFrames = 0;
 	}

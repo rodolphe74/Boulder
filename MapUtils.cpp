@@ -136,11 +136,11 @@ int MapUtils::isEmpty(int x, int y)
 	return 0;
 }
 
-void MapUtils::unmarkRocks()
+void MapUtils::unmarkBouldersAndDiamonds()
 {
 	for (int y = 0; y < MAP_HEIGHT - 1; y++) {
 		for (int x = 0; x < MAP_WIDTH; x++) {
-			if (map[y][x].type == ROCK) {
+			if (map[y][x].type == ROCK || map[y][x].type == DIAMOND) {
 				map[y][x].mark = 0;
 			}
 		}
@@ -178,29 +178,29 @@ void MapUtils::move(int x, int y, int direction)
 
 
 
-void MapUtils::scanBoulders(int x, int y)
+void MapUtils::scanBouldersAndDiamonds(int x, int y)
 {
-	if (map[y][x].type == ROCK && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE) && map[y][x].falling == STATIONARY) {
+	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = FALL;
 	}
 
-	if (map[y][x].type == ROCK &&  (x > 0 && map[y][x - 1].type == SPACE && map[y + 1][x - 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
+	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (x > 0 && map[y][x - 1].type == SPACE && map[y + 1][x - 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = ROLL_LEFT;
 	}
 
-	else if (map[y][x].type == ROCK && (x < MAP_WIDTH - 1 && map[y][x + 1].type == SPACE && map[y + 1][x + 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
+	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (x < MAP_WIDTH - 1 && map[y][x + 1].type == SPACE && map[y + 1][x + 1].type == SPACE) && (map[y + 1][x].type == ROCK || map[y + 1][x].type == DIAMOND || map[y + 1][x].type == WALL) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = ROLL_RIGHT;
 	}
 
-	else if (map[y][x].type == ROCK && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
+	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
 		map[y][x].falling = STATIONARY;
 	}
 
 }
 
-void MapUtils::updateFallingBoulders(int x, int y)
+void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 {
-	if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == FALL) {
+	if (map[y][x].mark == 0 && (map[y][x].type == ROCK || map[y][x].type == DIAMOND) && map[y][x].falling == FALL) {
 
 		if (map[y + 1][x].type == ROCKFORD) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
@@ -213,7 +213,7 @@ void MapUtils::updateFallingBoulders(int x, int y)
 		map[y][x].falling = STATIONARY;
 	}
 
-	else if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == ROLL_LEFT) {
+	else if (map[y][x].mark == 0 && (map[y][x].type == ROCK || map[y][x].type == DIAMOND) && map[y][x].falling == ROLL_LEFT) {
 		map[y][x - 1].type = map[y][x].type;
 		map[y][x - 1].falling = FALL;
 		map[y][x - 1].mark = 1;
@@ -221,7 +221,7 @@ void MapUtils::updateFallingBoulders(int x, int y)
 		map[y][x].falling = STATIONARY;
 	}
 
-	else if (map[y][x].mark == 0 && map[y][x].type == ROCK && map[y][x].falling == ROLL_RIGHT) {
+	else if (map[y][x].mark == 0 && (map[y][x].type == ROCK || map[y][x].type == DIAMOND) && map[y][x].falling == ROLL_RIGHT) {
 		map[y][x + 1].type = map[y][x].type;
 		map[y][x + 1].falling = FALL;
 		map[y][x + 1].mark = 1;

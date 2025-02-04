@@ -18,6 +18,7 @@ extern uint8_t currentDirection;
 extern uint8_t visibleX;
 extern uint8_t visibleY;
 extern uint32_t countFrames;
+extern uint32_t countFalls;
 extern uint8_t lastFrame;
 extern uint8_t lastMoveFrame;
 extern uint8_t push;
