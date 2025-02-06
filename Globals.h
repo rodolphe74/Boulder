@@ -22,6 +22,7 @@ extern uint32_t countFalls;
 extern uint8_t lastFrame;
 extern uint8_t lastMoveFrame;
 extern uint8_t push;
+extern uint8_t gameOver;
 extern int fall;
 extern int which;
 extern CaveDecoder caveDecoder;

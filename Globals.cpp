@@ -16,6 +16,7 @@ uint32_t countFalls = 0;
 uint8_t lastFrame = 0;
 uint8_t lastMoveFrame = 0;
 uint8_t push = 0;
+uint8_t gameOver = 0;
 int fall = 0;
 int which = 0;
 CaveDecoder caveDecoder;

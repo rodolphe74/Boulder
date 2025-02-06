@@ -7,18 +7,20 @@
 MapUtils *MapUtils::singleton = NULL;
 map::Object MapUtils::map[MAP_HEIGHT][MAP_WIDTH];
 map::Object MapUtils::previousMap[MAP_HEIGHT][MAP_WIDTH];
-map::Sprite MapUtils::bigWall, MapUtils::wall, MapUtils::grass, MapUtils::space, MapUtils::diamond, MapUtils::rock, MapUtils::rockFord;
+map::Sprite MapUtils::bigWall, MapUtils::wall, MapUtils::grass, MapUtils::space, MapUtils::diamond, MapUtils::rock, MapUtils::rockFord, MapUtils::explode;
 
 map::Sprite MapUtils::waitRockford0, MapUtils::waitRockford1, MapUtils::waitRockford2, MapUtils::waitRockford3;
 map::Sprite MapUtils::upRockford0, MapUtils::upRockford1, MapUtils::upRockford2, MapUtils::upRockford3;
 map::Sprite MapUtils::downRockford0, MapUtils::downRockford1, MapUtils::downRockford2, MapUtils::downRockford3;
 map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRockford2;
 map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
+map::Sprite MapUtils::explode0, MapUtils::explode1;
 
-map::Sprite *MapUtils::matchSprite[9];
-map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[7];
+map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
+map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[SPRITES_COUNT];
 Texture2D MapUtils::tiles;
 RenderTexture2D MapUtils::mapCache;
+std::set<map::Explosion *> MapUtils::explosions;
 
 void MapUtils::convertCaveData()
 {
@@ -204,6 +206,9 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 
 		if (map[y + 1][x].type == ROCKFORD) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
+			map::Explosion *e = new map::Explosion; 
+			*e = { (uint16_t)(x - countX), (uint16_t)(y + 1 - countY), ROCKFORD, 32 };
+			explosions.insert(e);
 		}
 
 		map[y + 1][x].type = map[y][x].type;
@@ -266,6 +271,7 @@ void MapUtils::cutTilesSheet()
 	diamond = { 16 * 4, 16 * 8, 16, 16, 0, &tiles };
 	rock = { 16 * 3, 16 * 8, 16, 16, 0, &tiles };
 	rockFord = { 16 * 0, 16 * 0, 16, 16, 1, &tiles };
+	explode = { 16 * 11, 16 * 8, 16, 16, 1, &tiles };
 
 	matchSprite[BIGWALL] = &bigWall;
 	matchSprite[WALL] = &wall;
@@ -276,7 +282,7 @@ void MapUtils::cutTilesSheet()
 	matchSprite[ROCKFORD] = &rockFord;
 	matchSprite[TRANSITIONAL_SPACE] = &space;
 	matchSprite[TRANSITIONAL_ROCKFORD] = &space;
-
+	matchSprite[EXPLODE] = &explode;
 
 	countX = 0;
 	countY = 0;
@@ -313,6 +319,10 @@ void MapUtils::cutTilesSheet()
 	rightRockford0 = { 16 * 0, 16 * 3, 16, 16, 0, &tiles };
 	rightRockford1 = { 16 * 1, 16 * 3, 16, 16, 0, &tiles };
 	rightRockford2 = { 16 * 2, 16 * 3, 16, 16, 0, &tiles };
+
+	explode0 = { 16 * 11, 16 * 8, 16, 16, 0, &tiles };
+	explode1 = { 16 * 11, 16 * 9, 16, 16, 0, &tiles };
+
 
 	// restless
 	matchAnimatedSprite[ROCKFORD].anim[0][0] = &waitRockford0;
@@ -394,8 +404,21 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[ROCKFORD].anim[5][10] = &waitRockford0;
 	matchAnimatedSprite[ROCKFORD].anim[5][11] = &waitRockford0;
 
-	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
+	matchAnimatedSprite[EXPLODE].anim[0][0] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][1] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][2] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][3] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][4] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][5] = &explode0;
+	matchAnimatedSprite[EXPLODE].anim[0][6] = &explode1;
+	matchAnimatedSprite[EXPLODE].anim[0][7] = &explode1;
+	matchAnimatedSprite[EXPLODE].anim[0][8] = &explode1;
+	matchAnimatedSprite[EXPLODE].anim[0][9] = &explode1;
+	matchAnimatedSprite[EXPLODE].anim[0][10] = &explode1;
+	matchAnimatedSprite[EXPLODE].anim[0][11] = &explode1;
 
+	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
+	matchAnimatedSprite[EXPLODE].currentAnim = 0;
 }
 
 

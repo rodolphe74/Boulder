@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <set>
 #include "raylib.h"
 
 //#define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -26,6 +27,7 @@
 #define ROLL_LEFT 2
 #define ROLL_RIGHT 3
 
+#define SPRITES_COUNT 10
 #define BIGWALL 0
 #define WALL 1
 #define GRASS 2
@@ -35,6 +37,7 @@
 #define ROCKFORD 6
 #define TRANSITIONAL_SPACE 7
 #define TRANSITIONAL_ROCKFORD 8
+#define EXPLODE 9
 
 namespace map {
 	struct Sprite {
@@ -57,6 +60,18 @@ namespace map {
 		uint8_t currentAnim;
 	};
 	typedef struct MatchAnimatedSprite MatchAnimatedSprite;
+
+	struct Explosion {
+		uint16_t x, y;
+		uint8_t type;
+		uint8_t count;
+		bool operator <(const Explosion &pt) const
+		{
+			//return (x < pt.x) || ((!(pt.x < x)) && (y < pt.y));
+			return ((void *)this < (void *)&pt);
+		}
+	};
+	typedef struct Explosion Explosion;
 }
 
 class MapUtils
@@ -72,16 +87,19 @@ public:
 	static MapUtils *getInstance();
 	~MapUtils();
 
-	static map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord;
+	static map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode;
 	static map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
 	static map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	static map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
 	static map::Sprite leftRockford0, leftRockford1, leftRockford2;
 	static map::Sprite rightRockford0, rightRockford1, rightRockford2;
+	static map::Sprite explode0, explode1;
 	static map::Object map[MAP_HEIGHT][MAP_WIDTH];
 	static map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
-	static map::Sprite *matchSprite[9];
-	static map::MatchAnimatedSprite matchAnimatedSprite[7];
+	static map::Sprite *matchSprite[SPRITES_COUNT];
+	static map::MatchAnimatedSprite matchAnimatedSprite[SPRITES_COUNT];
+	static std::set<map::Explosion *> explosions;
+
 
 	void cutTilesSheet();
 	void convertCaveData();

@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include <chrono>
 #include <iostream>
+#include "main.h"
 
 void init()
 {
@@ -256,6 +257,63 @@ void animateRockford()
 	}
 }
 
+void explodeAt(int x, int y, int c)
+{
+	map::Sprite *explosionSprite = mapUtils->matchAnimatedSprite[EXPLODE].anim[0][c % 12];
+	Rectangle frameSource = { (float)explosionSprite->xsource, (float)explosionSprite->ysource, (float)explosionSprite->width, (float)explosionSprite->height };
+	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
+	DrawTexturePro(*(explosionSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
+}
+
+void doExplosion(map::Explosion &e)
+{
+	explodeAt(e.x - 1, e.y - 1, e.count);
+	explodeAt(e.x, e.y - 1, e.count);
+	explodeAt(e.x + 1, e.y - 1, e.count);
+
+	explodeAt(e.x - 1, e.y, e.count);
+	explodeAt(e.x, e.y, e.count);
+	explodeAt(e.x + 1, e.y, e.count);
+
+	explodeAt(e.x - 1, e.y + 1, e.count);
+	explodeAt(e.x, e.y + 1, e.count);
+	explodeAt(e.x + 1, e.y + 1, e.count);
+
+	mapUtils->map[e.y + countY - 1][e.x + countX - 1].type = SPACE;
+	mapUtils->map[e.y + countY - 1][e.x + countX].type = SPACE;
+	mapUtils->map[e.y + countY - 1][e.x + countX + 1].type = SPACE;
+
+	mapUtils->map[e.y + countY][e.x + countX - 1].type = SPACE;
+	mapUtils->map[e.y + countY][e.x + countX].type = SPACE;
+	mapUtils->map[e.y + countY][e.x + countX + 1].type = SPACE;
+
+	mapUtils->map[e.y + countY + 1][e.x + countX - 1].type = SPACE;
+	mapUtils->map[e.y + countY + 1][e.x + countX].type = SPACE;
+	mapUtils->map[e.y + countY + 1][e.x + countX + 1].type = SPACE;
+
+	if (e.type == ROCKFORD) {
+		gameOver = 1;
+	}
+
+	e.count--;
+}
+
+void iterateExplosions()
+{
+	std::set<map::Explosion *>::iterator it;
+	for (it = mapUtils->explosions.begin(); it != mapUtils->explosions.end();) {
+		map::Explosion *e = *it;
+		if (e->count <= 0) {
+			delete(*it);
+			mapUtils->explosions.erase(it++);
+		}
+		else {
+			doExplosion(*e);
+			++it;
+		}
+	}
+}
+
 int main(void)
 {
 	const int screenWidth = 1008;
@@ -319,6 +377,10 @@ int main(void)
 			doFalls();
 		}
 
+		if (mapUtils->explosions.size()) {
+			iterateExplosions();
+		}
+
 		// Game informations
 		DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, screenWidth, TILE_SIZE * ZOOM, RAYWHITE);
 
@@ -338,6 +400,8 @@ int main(void)
 	CloseWindow();        // Close window and OpenGL context
 	return 0;
 }
+
+
 
 
 
