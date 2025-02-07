@@ -7,6 +7,7 @@ file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # xcode workaround
     file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR}/Debug)
+    file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR}/Release)
 endif()
 
 find_package(glfw3 CONFIG REQUIRED)
