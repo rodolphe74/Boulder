@@ -265,6 +265,14 @@ void explodeAt(int x, int y, int c)
 	DrawTexturePro(*(explosionSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
 }
 
+void endRockfordAt(int x, int y, int c)
+{
+	map::Sprite *endSprite = mapUtils->matchAnimatedSprite[ROCKFORD].anim[6][c > 64 ? 0 : 7];
+	Rectangle frameSource = { (float)endSprite->xsource, (float)endSprite->ysource, (float)endSprite->width, (float)endSprite->height };
+	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
+	DrawTexturePro(*(endSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
+}
+
 void doExplosion(map::Explosion &e)
 {
 	explodeAt(e.x - 1, e.y - 1, e.count);
@@ -291,7 +299,10 @@ void doExplosion(map::Explosion &e)
 	mapUtils->map[e.y + countY + 1][e.x + countX].type = SPACE;
 	mapUtils->map[e.y + countY + 1][e.x + countX + 1].type = SPACE;
 
-	if (e.type == ROCKFORD) {
+	if (e.type == ROCKFORD && e.count > 1) {
+		endRockfordAt(e.x, e.y, e.count);
+	}
+	else if (e.type == ROCKFORD && e.count == 1) {
 		gameOver = 1;
 	}
 
@@ -314,6 +325,108 @@ void iterateExplosions()
 	}
 }
 
+
+void initGame()
+{
+	caveDecoder.DecodeCave(CaveDecoder::cave1);
+	mapUtils->convertCaveData();
+	gameOver = 0;
+	countX = 0;
+	countY = 0;
+	shiftX = 0;
+	shiftY = 0;
+	rockFordX = 3;
+	rockFordY = 2;
+	rockfordShift = 0;
+	previousRockFordX = rockFordX;
+	previousRockFordY = rockFordY;
+	visibleX = 3;
+	visibleY = 2;
+}
+
+
+void gameLoopScreen(int pause = 0)
+{
+	setRockfordSprite();
+
+	if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_LEFT)) && (currentDirection == LEFT || currentDirection == RIGHT)) {
+		uint8_t pushIt = mapUtils->checkPush();
+		if (pushIt && push && push == FRAMES_BEFORE_PUSH) {
+			mapUtils->moveStone();
+			push = 0;
+		}
+	}
+	else {
+		push = 0;
+	}
+
+	// Update
+	if (keyFlag) {
+		if (!pause)
+			keyPressed();
+
+		if (currentDirection && !mapUtils->checkMove()) {
+			keyFlag = 1;
+		}
+		else {
+			prepareScroll();
+		}
+	}
+
+	if (!keyFlag && currentDirection) {
+		if (scrollFlag)
+			animate();
+	}
+
+	//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	BeginDrawing();
+
+	ClearBackground(RAYWHITE);
+
+	mapUtils->drawMap();
+
+	if (push && !rockfordAnimFlag) {
+		animateRockfordPushing();
+	}
+
+	if (rockfordAnimFlag) {
+		animateRockford();
+	}
+
+	if (!rockfordAnimFlag && (countFalls % 16 == 0)) {
+		doFalls();
+	}
+
+	if (mapUtils->explosions.size()) {
+		iterateExplosions();
+	}
+
+	// Game informations
+	DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, SCREEN_WIDTH, TILE_SIZE * ZOOM, RAYWHITE);
+
+	EndDrawing();
+	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [millis]" << std::endl;
+
+	countFrames++;
+	if (countFrames == 1024)
+		countFrames = 0;
+
+	countFalls++;
+	if (countFrames == 1024)
+		countFrames = 0;
+}
+
+void gameOverScreen()
+{
+	BeginDrawing();
+	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
+	DrawText("GAME OVER", 20, 20, 40, DARKBLUE);
+	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
+	EndDrawing();
+}
+
+
 int main(void)
 {
 	const int screenWidth = 1008;
@@ -328,83 +441,30 @@ int main(void)
 
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		setRockfordSprite();
-
-		if ((IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_LEFT)) && (currentDirection == LEFT || currentDirection == RIGHT)) {
-			uint8_t pushIt = mapUtils->checkPush();
-			if (pushIt && push && push == FRAMES_BEFORE_PUSH) {
-				mapUtils->moveStone();
-				push = 0;
+		switch (currentScreen) {
+		case GAMELOOP:
+			gameLoopScreen();
+			if (gameOver) {
+				currentScreen = GAMEOVER;
+				// currentScreen = GAMEWAIT;
 			}
-		}
-		else {
-			push = 0;
-		}
-
-		// Update
-		if (keyFlag) {
-			keyPressed();
-
-			if (currentDirection && !mapUtils->checkMove()) {
-				keyFlag = 1;
+			break;
+		case GAMEOVER:
+			gameOverScreen();
+			if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+			{
+				initGame();
+				currentScreen = GAMELOOP;
 			}
-			else {
-				prepareScroll();
-			}
+			break;
+		case GAMEWAIT:
+			gameLoopScreen(1);
+			break;
 		}
 
-		if (!keyFlag && currentDirection) {
-			if (scrollFlag)
-				animate();
-		}
 
-		//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-		BeginDrawing();
-
-		ClearBackground(RAYWHITE);
-
-		mapUtils->drawMap();
-
-		if (push && !rockfordAnimFlag) {
-			animateRockfordPushing();
-		}
-
-		if (rockfordAnimFlag) {
-			animateRockford();
-		}
-
-		if (!rockfordAnimFlag && (countFalls % 16 == 0)) {
-			doFalls();
-		}
-
-		if (mapUtils->explosions.size()) {
-			iterateExplosions();
-		}
-
-		// Game informations
-		DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, screenWidth, TILE_SIZE * ZOOM, RAYWHITE);
-
-		EndDrawing();
-		//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [millis]" << std::endl;
-
-		countFrames++;
-		if (countFrames == 1024)
-			countFrames = 0;
-
-		countFalls++;
-		if (countFrames == 1024)
-			countFrames = 0;
 	}
 
 	CloseWindow();        // Close window and OpenGL context
 	return 0;
 }
-
-
-
-
-
-
-
-

@@ -14,6 +14,7 @@ map::Sprite MapUtils::upRockford0, MapUtils::upRockford1, MapUtils::upRockford2,
 map::Sprite MapUtils::downRockford0, MapUtils::downRockford1, MapUtils::downRockford2, MapUtils::downRockford3;
 map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRockford2;
 map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
+map::Sprite MapUtils::endRockford0, MapUtils::endRockford1;
 map::Sprite MapUtils::explode0, MapUtils::explode1;
 
 map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
@@ -207,7 +208,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 		if (map[y + 1][x].type == ROCKFORD) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
 			map::Explosion *e = new map::Explosion; 
-			*e = { (uint16_t)(x - countX), (uint16_t)(y + 1 - countY), ROCKFORD, 32 };
+			*e = { (uint16_t)(x - countX), (uint16_t)(y + 1 - countY), ROCKFORD, 128 };
 			explosions.insert(e);
 		}
 
@@ -320,6 +321,9 @@ void MapUtils::cutTilesSheet()
 	rightRockford1 = { 16 * 1, 16 * 3, 16, 16, 0, &tiles };
 	rightRockford2 = { 16 * 2, 16 * 3, 16, 16, 0, &tiles };
 
+	endRockford0 = { 16 * 4, 16 * 5, 16, 16, 0, &tiles };
+	endRockford1 = { 16 * 5, 16 * 5, 16, 16, 0, &tiles };
+
 	explode0 = { 16 * 11, 16 * 8, 16, 16, 0, &tiles };
 	explode1 = { 16 * 11, 16 * 9, 16, 16, 0, &tiles };
 
@@ -403,6 +407,21 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[ROCKFORD].anim[5][9] = &waitRockford0;
 	matchAnimatedSprite[ROCKFORD].anim[5][10] = &waitRockford0;
 	matchAnimatedSprite[ROCKFORD].anim[5][11] = &waitRockford0;
+
+	// end
+	matchAnimatedSprite[ROCKFORD].anim[6][0] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][1] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][2] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][3] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][4] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][5] = &endRockford0;
+	matchAnimatedSprite[ROCKFORD].anim[6][6] = &endRockford1;
+	matchAnimatedSprite[ROCKFORD].anim[6][7] = &endRockford1;
+	matchAnimatedSprite[ROCKFORD].anim[6][8] = &endRockford1;
+	matchAnimatedSprite[ROCKFORD].anim[6][9] = &endRockford1;
+	matchAnimatedSprite[ROCKFORD].anim[6][10] = &endRockford1;
+	matchAnimatedSprite[ROCKFORD].anim[6][11] = &endRockford1;
+
 
 	matchAnimatedSprite[EXPLODE].anim[0][0] = &explode0;
 	matchAnimatedSprite[EXPLODE].anim[0][1] = &explode0;

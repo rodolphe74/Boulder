@@ -6,6 +6,9 @@
 #define FRAMES_BEFORE_RESTLESS 64
 #define TILES_DISPLAY_BUFFER 1
 
+typedef enum GameScreen { LOGO = 0, TITLE, GAMELOOP, GAMEOVER, GAMEWAIT } GameScreen;
+extern GameScreen currentScreen;
+
 extern uint8_t quit;
 extern uint8_t scrollFlag;
 extern uint8_t keyFlag;

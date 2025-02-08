@@ -21,3 +21,4 @@ int fall = 0;
 int which = 0;
 CaveDecoder caveDecoder;
 MapUtils *mapUtils;
+GameScreen currentScreen = GAMELOOP;
