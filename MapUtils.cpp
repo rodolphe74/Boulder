@@ -247,7 +247,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 
 MapUtils::MapUtils()
 {
-	tiles = LoadTexture("Resources/tileset.png");
+	tiles = LoadTexture("Resources/tileset_1.png");
 	mapCache = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 	for (int y = 0; y < TILES_DISPLAY_HEIGHT; y++) {
 		for (int x = 0; x < TILES_DISPLAY_WIDTH; x++) {
