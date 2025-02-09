@@ -56,8 +56,9 @@ namespace map {
 	typedef struct Object Object;
 
 	struct MatchAnimatedSprite {
-		Sprite *anim[8][12];
+		Sprite *anim[8][32];
 		uint8_t currentAnim;
+		uint8_t animCount;
 	};
 	typedef struct MatchAnimatedSprite MatchAnimatedSprite;
 
@@ -92,6 +93,9 @@ public:
 	static map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	static map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
 	static map::Sprite endRockford0, endRockford1;
+	static map::Sprite diamond0, diamond1, diamond2, diamond3;
+	static map::Sprite rock0, rock1, rock2, rock3;
+
 
 	static map::Sprite leftRockford0, leftRockford1, leftRockford2;
 	static map::Sprite rightRockford0, rightRockford1, rightRockford2;

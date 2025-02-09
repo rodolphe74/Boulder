@@ -16,6 +16,8 @@ map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRock
 map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
 map::Sprite MapUtils::endRockford0, MapUtils::endRockford1;
 map::Sprite MapUtils::explode0, MapUtils::explode1;
+map::Sprite MapUtils::diamond0, MapUtils::diamond1, MapUtils::diamond2, MapUtils::diamond3;
+map::Sprite MapUtils::rock0, MapUtils::rock1, MapUtils::rock2, MapUtils::rock3;
 
 map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
 map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[SPRITES_COUNT];
@@ -68,7 +70,13 @@ void MapUtils::drawMap()
 			int startX = std::min(std::max(0, x + countX - TILES_DISPLAY_BUFFER), MAP_WIDTH);
 			int startY = std::min(std::max(0, y + countY - TILES_DISPLAY_BUFFER), MAP_HEIGHT);
 			/*sprite = matchSprite[map[y + countY][x + countX].type];*/
-			sprite = matchSprite[map[startY][startX].type];
+			uint8_t type = map[startY][startX].type;
+			sprite = matchSprite[type];
+			if ((type == ROCKFORD && rockfordAnimFlag && sprite->isAnim) || (type != ROCKFORD && sprite->isAnim)) {
+				uint8_t currentAnim = mapUtils->matchAnimatedSprite[type].currentAnim;
+				uint8_t animCount = mapUtils->matchAnimatedSprite[type].animCount;
+				sprite = matchAnimatedSprite[type].anim[currentAnim][countFrames % animCount];
+			}
 			Rectangle frameSource = { (float)sprite->xsource, (float)sprite->ysource, (float)sprite->width, (float)sprite->height };
 			Rectangle frameDest = { (float)(hx - shiftX) - (TILE_SIZE * ZOOM), (float)(hy - shiftY) - (TILE_SIZE * ZOOM),(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
 			DrawTexturePro(*(sprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
@@ -269,8 +277,8 @@ void MapUtils::cutTilesSheet()
 	wall = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
 	grass = { 16 * 1, 16 * 8, 16, 16, 0, &tiles };
 	space = { 16 * 2, 16 * 8, 16, 16, 0, &tiles };
-	diamond = { 16 * 4, 16 * 8, 16, 16, 0, &tiles };
-	rock = { 16 * 3, 16 * 8, 16, 16, 0, &tiles };
+	diamond = { 16 * 4, 16 * 8, 16, 16, 1, &tiles };
+	rock = { 16 * 3, 16 * 8, 16, 16, 1, &tiles };
 	rockFord = { 16 * 0, 16 * 0, 16, 16, 1, &tiles };
 	explode = { 16 * 11, 16 * 8, 16, 16, 1, &tiles };
 
@@ -326,6 +334,16 @@ void MapUtils::cutTilesSheet()
 
 	explode0 = { 16 * 11, 16 * 8, 16, 16, 0, &tiles };
 	explode1 = { 16 * 11, 16 * 9, 16, 16, 0, &tiles };
+
+	diamond0 = { 16 * 4, 16 * 8, 16, 16, 0, &tiles };
+	diamond1 = { 16 * 4, 16 * 9, 16, 16, 0, &tiles };
+	diamond2 = { 16 * 4, 16 * 10, 16, 16, 0, &tiles };
+	diamond3 = { 16 * 4, 16 * 11, 16, 16, 0, &tiles };
+
+	rock0 = { 16 * 3, 16 * 8, 16, 16, 0, &tiles };
+	rock1 = { 16 * 3, 16 * 9, 16, 16, 0, &tiles };
+	rock2 = { 16 * 3, 16 * 10, 16, 16, 0, &tiles };
+	rock3 = { 16 * 3, 16 * 11, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -422,7 +440,7 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[ROCKFORD].anim[6][10] = &endRockford1;
 	matchAnimatedSprite[ROCKFORD].anim[6][11] = &endRockford1;
 
-
+	// explode
 	matchAnimatedSprite[EXPLODE].anim[0][0] = &explode0;
 	matchAnimatedSprite[EXPLODE].anim[0][1] = &explode0;
 	matchAnimatedSprite[EXPLODE].anim[0][2] = &explode0;
@@ -436,8 +454,86 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[EXPLODE].anim[0][10] = &explode1;
 	matchAnimatedSprite[EXPLODE].anim[0][11] = &explode1;
 
+	// diamond
+	matchAnimatedSprite[DIAMOND].anim[0][0] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][1] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][2] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][3] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][4] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][5] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][6] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][7] = &diamond0;
+	matchAnimatedSprite[DIAMOND].anim[0][8] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][9] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][10] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][11] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][12] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][13] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][14] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][15] = &diamond1;
+	matchAnimatedSprite[DIAMOND].anim[0][16] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][17] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][18] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][19] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][20] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][21] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][22] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][23] = &diamond2;
+	matchAnimatedSprite[DIAMOND].anim[0][24] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][25] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][26] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][27] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][28] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][29] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][30] = &diamond3;
+	matchAnimatedSprite[DIAMOND].anim[0][31] = &diamond3;
+
+	// diamond
+	matchAnimatedSprite[ROCK].anim[0][0] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][1] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][2] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][3] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][4] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][5] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][6] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][7] = &rock0;
+	matchAnimatedSprite[ROCK].anim[0][8] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][9] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][10] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][11] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][12] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][13] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][14] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][15] = &rock1;
+	matchAnimatedSprite[ROCK].anim[0][16] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][17] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][18] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][19] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][20] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][21] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][22] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][23] = &rock2;
+	matchAnimatedSprite[ROCK].anim[0][24] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][25] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][26] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][27] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][28] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][29] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][30] = &rock3;
+	matchAnimatedSprite[ROCK].anim[0][31] = &rock3;
+
+	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
+	matchAnimatedSprite[ROCKFORD].animCount = 12;
+
 	matchAnimatedSprite[EXPLODE].currentAnim = 0;
+	matchAnimatedSprite[EXPLODE].animCount = 12;
+	
+	matchAnimatedSprite[DIAMOND].currentAnim = 0;
+	matchAnimatedSprite[DIAMOND].animCount = 32;
+
+	matchAnimatedSprite[ROCK].currentAnim = 0;
+	matchAnimatedSprite[ROCK].animCount = 32;
 }
 
 

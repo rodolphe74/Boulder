@@ -185,7 +185,8 @@ void setRockfordSprite()
 void animateRockfordPushing()
 {
 	uint8_t currentAnim = mapUtils->matchAnimatedSprite[ROCKFORD].currentAnim;
-	map::Sprite *animatedRockFord = mapUtils->matchAnimatedSprite[ROCKFORD].anim[currentAnim][countFrames % 12];
+	uint8_t animCount = mapUtils->matchAnimatedSprite[ROCKFORD].animCount;
+	map::Sprite *animatedRockFord = mapUtils->matchAnimatedSprite[ROCKFORD].anim[currentAnim][countFrames % animCount];
 	if (currentDirection == LEFT || currentDirection == RIGHT) {
 		// stationary Rockford pushing his stone
 		Rectangle frameSource = { (float)animatedRockFord->xsource, (float)animatedRockFord->ysource, (float)animatedRockFord->width, (float)animatedRockFord->height };
@@ -193,6 +194,10 @@ void animateRockfordPushing()
 		DrawTexturePro(*(animatedRockFord->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
 	}
 }
+
+
+
+
 
 void animateRockford()
 {
@@ -205,7 +210,8 @@ void animateRockford()
 		sy = (previousRockFordY - countY) * TILE_SIZE;
 		// get current Rockford animated sprite
 		uint8_t currentAnim = mapUtils->matchAnimatedSprite[ROCKFORD].currentAnim;
-		map::Sprite *animatedRockFord = mapUtils->matchAnimatedSprite[ROCKFORD].anim[currentAnim][countFrames % 12];
+		uint8_t animCount = mapUtils->matchAnimatedSprite[ROCKFORD].animCount;
+		map::Sprite *animatedRockFord = mapUtils->matchAnimatedSprite[ROCKFORD].anim[currentAnim][countFrames % animCount];
 
 		if (currentDirection == LEFT || currentDirection == RIGHT) {
 			if (scrollFlag) {
@@ -259,7 +265,9 @@ void animateRockford()
 
 void explodeAt(int x, int y, int c)
 {
-	map::Sprite *explosionSprite = mapUtils->matchAnimatedSprite[EXPLODE].anim[0][c % 12];
+	uint8_t currentAnim = mapUtils->matchAnimatedSprite[EXPLODE].currentAnim;
+	uint8_t animCount = mapUtils->matchAnimatedSprite[EXPLODE].animCount;
+	map::Sprite *explosionSprite = mapUtils->matchAnimatedSprite[EXPLODE].anim[currentAnim][c % animCount];
 	Rectangle frameSource = { (float)explosionSprite->xsource, (float)explosionSprite->ysource, (float)explosionSprite->width, (float)explosionSprite->height };
 	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
 	DrawTexturePro(*(explosionSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
