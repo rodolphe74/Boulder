@@ -18,6 +18,9 @@ map::Sprite MapUtils::endRockford0, MapUtils::endRockford1;
 map::Sprite MapUtils::explode0, MapUtils::explode1;
 map::Sprite MapUtils::diamond0, MapUtils::diamond1, MapUtils::diamond2, MapUtils::diamond3;
 map::Sprite MapUtils::rock0, MapUtils::rock1, MapUtils::rock2, MapUtils::rock3;
+map::Sprite MapUtils::grass0, MapUtils::grass1, MapUtils::grass2, MapUtils::grass3;
+map::Sprite MapUtils::space0, MapUtils::space1, MapUtils::space2, MapUtils::space3;
+
 
 map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
 map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[SPRITES_COUNT];
@@ -247,7 +250,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 
 MapUtils::MapUtils()
 {
-	tiles = LoadTexture("Resources/tileset_1.png");
+	tiles = LoadTexture("Resources/tileset_6.png");
 	mapCache = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 	for (int y = 0; y < TILES_DISPLAY_HEIGHT; y++) {
 		for (int x = 0; x < TILES_DISPLAY_WIDTH; x++) {
@@ -275,8 +278,8 @@ void MapUtils::cutTilesSheet()
 {
 	bigWall = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
 	wall = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
-	grass = { 16 * 1, 16 * 8, 16, 16, 0, &tiles };
-	space = { 16 * 2, 16 * 8, 16, 16, 0, &tiles };
+	grass = { 16 * 1, 16 * 8, 16, 16, 1, &tiles };
+	space = { 16 * 2, 16 * 8, 16, 16, 1, &tiles };
 	diamond = { 16 * 4, 16 * 8, 16, 16, 1, &tiles };
 	rock = { 16 * 3, 16 * 8, 16, 16, 1, &tiles };
 	rockFord = { 16 * 0, 16 * 0, 16, 16, 1, &tiles };
@@ -344,6 +347,16 @@ void MapUtils::cutTilesSheet()
 	rock1 = { 16 * 3, 16 * 9, 16, 16, 0, &tiles };
 	rock2 = { 16 * 3, 16 * 10, 16, 16, 0, &tiles };
 	rock3 = { 16 * 3, 16 * 11, 16, 16, 0, &tiles };
+
+	grass0 = { 16 * 1, 16 * 8, 16, 16, 0, &tiles };
+	grass1 = { 16 * 1, 16 * 9, 16, 16, 0, &tiles };
+	grass2 = { 16 * 1, 16 * 10, 16, 16, 0, &tiles };
+	grass3 = { 16 * 1, 16 * 11, 16, 16, 0, &tiles };
+
+	space0 = { 16 * 2, 16 * 8, 16, 16, 0, &tiles };
+	space1 = { 16 * 2, 16 * 9, 16, 16, 0, &tiles };
+	space2 = { 16 * 2, 16 * 10, 16, 16, 0, &tiles };
+	space3 = { 16 * 2, 16 * 11, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -522,6 +535,140 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[ROCK].anim[0][30] = &rock3;
 	matchAnimatedSprite[ROCK].anim[0][31] = &rock3;
 
+	// grass
+	matchAnimatedSprite[GRASS].anim[0][0] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][1] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][2] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][3] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][4] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][5] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][6] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][7] = &grass0;
+	matchAnimatedSprite[GRASS].anim[0][8] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][9] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][10] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][11] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][12] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][13] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][14] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][15] = &grass1;
+	matchAnimatedSprite[GRASS].anim[0][16] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][17] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][18] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][19] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][20] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][21] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][22] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][23] = &grass2;
+	matchAnimatedSprite[GRASS].anim[0][24] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][25] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][26] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][27] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][28] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][29] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][30] = &grass3;
+	matchAnimatedSprite[GRASS].anim[0][31] = &grass3;
+
+	// space
+	matchAnimatedSprite[SPACE].anim[0][0] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][1] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][2] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][3] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][4] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][5] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][6] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][7] = &space0;
+	matchAnimatedSprite[SPACE].anim[0][8] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][9] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][10] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][11] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][12] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][13] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][14] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][15] = &space1;
+	matchAnimatedSprite[SPACE].anim[0][16] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][17] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][18] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][19] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][20] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][21] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][22] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][23] = &space2;
+	matchAnimatedSprite[SPACE].anim[0][24] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][25] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][26] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][27] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][28] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][29] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][30] = &space3;
+	matchAnimatedSprite[SPACE].anim[0][31] = &space3;
+
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][0] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][1] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][2] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][3] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][4] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][5] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][6] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][7] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][8] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][9] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][10] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][11] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][12] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][13] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][14] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][15] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][16] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][17] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][18] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][19] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][20] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][21] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][22] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][23] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][24] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][25] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][26] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][27] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][28] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][29] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][30] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].anim[0][31] = &space3;
+
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][0] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][1] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][2] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][3] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][4] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][5] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][6] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][7] = &space0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][8] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][9] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][10] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][11] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][12] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][13] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][14] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][15] = &space1;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][16] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][17] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][18] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][19] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][20] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][21] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][22] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][23] = &space2;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][24] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][25] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][26] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][27] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][28] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][29] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][30] = &space3;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][31] = &space3;
+
 	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
 	matchAnimatedSprite[ROCKFORD].animCount = 12;
@@ -534,6 +681,18 @@ void MapUtils::cutTilesSheet()
 
 	matchAnimatedSprite[ROCK].currentAnim = 0;
 	matchAnimatedSprite[ROCK].animCount = 32;
+
+	matchAnimatedSprite[GRASS].currentAnim = 0;
+	matchAnimatedSprite[GRASS].animCount = 32;
+
+	matchAnimatedSprite[SPACE].currentAnim = 0;
+	matchAnimatedSprite[SPACE].animCount = 32;
+
+	matchAnimatedSprite[TRANSITIONAL_SPACE].currentAnim = 0;
+	matchAnimatedSprite[TRANSITIONAL_SPACE].animCount = 32;
+
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].currentAnim = 0;
+	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].animCount = 32;
 }
 
 

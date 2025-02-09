@@ -95,6 +95,8 @@ public:
 	static map::Sprite endRockford0, endRockford1;
 	static map::Sprite diamond0, diamond1, diamond2, diamond3;
 	static map::Sprite rock0, rock1, rock2, rock3;
+	static map::Sprite grass0, grass1, grass2, grass3;
+	static map::Sprite space0, space1, space2, space3;
 
 
 	static map::Sprite leftRockford0, leftRockford1, leftRockford2;
