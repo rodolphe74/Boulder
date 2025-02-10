@@ -8,6 +8,7 @@ MapUtils *MapUtils::singleton = NULL;
 map::Object MapUtils::map[MAP_HEIGHT][MAP_WIDTH];
 map::Object MapUtils::previousMap[MAP_HEIGHT][MAP_WIDTH];
 map::Sprite MapUtils::bigWall, MapUtils::wall, MapUtils::grass, MapUtils::space, MapUtils::diamond, MapUtils::rock, MapUtils::rockFord, MapUtils::explode;
+map::Sprite MapUtils::preOut, MapUtils::winRockford;
 
 map::Sprite MapUtils::waitRockford0, MapUtils::waitRockford1, MapUtils::waitRockford2, MapUtils::waitRockford3;
 map::Sprite MapUtils::upRockford0, MapUtils::upRockford1, MapUtils::upRockford2, MapUtils::upRockford3;
@@ -15,11 +16,13 @@ map::Sprite MapUtils::downRockford0, MapUtils::downRockford1, MapUtils::downRock
 map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRockford2;
 map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
 map::Sprite MapUtils::endRockford0, MapUtils::endRockford1;
+map::Sprite MapUtils::winRockford0, MapUtils::winRockford1;
 map::Sprite MapUtils::explode0, MapUtils::explode1;
 map::Sprite MapUtils::diamond0, MapUtils::diamond1, MapUtils::diamond2, MapUtils::diamond3;
 map::Sprite MapUtils::rock0, MapUtils::rock1, MapUtils::rock2, MapUtils::rock3;
 map::Sprite MapUtils::grass0, MapUtils::grass1, MapUtils::grass2, MapUtils::grass3;
 map::Sprite MapUtils::space0, MapUtils::space1, MapUtils::space2, MapUtils::space3;
+map::Sprite MapUtils::out0, MapUtils::out1;
 
 
 map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
@@ -54,7 +57,14 @@ void MapUtils::convertCaveData()
 			case 'X':
 				map[i][j] = { ROCKFORD, STATIONARY };
 				break;
+			case 'P':
+				map[i][j] = { OUT, STATIONARY };
+				exitX = j;
+				exitY = i;
+				printf("Exit at %d,%d\n", j, i + 2);
+				break;
 			default:
+				printf("Unknown:%c at %d,%d\n", CaveDecoder::caveData[j][i + 2], j, i + 2);
 				break;
 			}
 		}
@@ -218,7 +228,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 
 		if (map[y + 1][x].type == ROCKFORD) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
-			map::Explosion *e = new map::Explosion; 
+			map::Explosion *e = new map::Explosion;
 			*e = { (uint16_t)(x - countX), (uint16_t)(y + 1 - countY), ROCKFORD, 128 };
 			explosions.insert(e);
 		}
@@ -250,7 +260,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
 
 MapUtils::MapUtils()
 {
-	tiles = LoadTexture("Resources/tileset_6.png");
+	tiles = LoadTexture("Resources/tileset_1.png");
 	mapCache = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 	for (int y = 0; y < TILES_DISPLAY_HEIGHT; y++) {
 		for (int x = 0; x < TILES_DISPLAY_WIDTH; x++) {
@@ -283,7 +293,9 @@ void MapUtils::cutTilesSheet()
 	diamond = { 16 * 4, 16 * 8, 16, 16, 1, &tiles };
 	rock = { 16 * 3, 16 * 8, 16, 16, 1, &tiles };
 	rockFord = { 16 * 0, 16 * 0, 16, 16, 1, &tiles };
+	winRockford = { 16 * 2, 16 * 0, 16, 16, 1, &tiles };
 	explode = { 16 * 11, 16 * 8, 16, 16, 1, &tiles };
+	preOut = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
 
 	matchSprite[BIGWALL] = &bigWall;
 	matchSprite[WALL] = &wall;
@@ -295,6 +307,8 @@ void MapUtils::cutTilesSheet()
 	matchSprite[TRANSITIONAL_SPACE] = &space;
 	matchSprite[TRANSITIONAL_ROCKFORD] = &space;
 	matchSprite[EXPLODE] = &explode;
+	matchSprite[OUT] = &preOut;
+	matchSprite[WIN_ROCKFORD] = &winRockford;
 
 	countX = 0;
 	countY = 0;
@@ -357,6 +371,12 @@ void MapUtils::cutTilesSheet()
 	space1 = { 16 * 2, 16 * 9, 16, 16, 0, &tiles };
 	space2 = { 16 * 2, 16 * 10, 16, 16, 0, &tiles };
 	space3 = { 16 * 2, 16 * 11, 16, 16, 0, &tiles };
+
+	out0 = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
+	out1 = { 16 * 0, 16 * 9, 16, 16, 0, &tiles };
+
+	winRockford0 = { 16 * 2, 16 * 0, 16, 16, 0, &tiles };
+	winRockford1 = { 16 * 3, 16 * 0, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -669,13 +689,81 @@ void MapUtils::cutTilesSheet()
 	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][30] = &space3;
 	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].anim[0][31] = &space3;
 
+	// out
+	matchAnimatedSprite[OUT].anim[0][0] = &out0;
+	matchAnimatedSprite[OUT].anim[0][1] = &out0;
+	matchAnimatedSprite[OUT].anim[0][2] = &out0;
+	matchAnimatedSprite[OUT].anim[0][3] = &out0;
+	matchAnimatedSprite[OUT].anim[0][4] = &out0;
+	matchAnimatedSprite[OUT].anim[0][5] = &out0;
+	matchAnimatedSprite[OUT].anim[0][6] = &out0;
+	matchAnimatedSprite[OUT].anim[0][7] = &out0;
+	matchAnimatedSprite[OUT].anim[0][8] = &out0;
+	matchAnimatedSprite[OUT].anim[0][9] = &out0;
+	matchAnimatedSprite[OUT].anim[0][10] = &out0;
+	matchAnimatedSprite[OUT].anim[0][11] = &out0;
+	matchAnimatedSprite[OUT].anim[0][12] = &out0;
+	matchAnimatedSprite[OUT].anim[0][13] = &out0;
+	matchAnimatedSprite[OUT].anim[0][14] = &out0;
+	matchAnimatedSprite[OUT].anim[0][15] = &out0;
+	matchAnimatedSprite[OUT].anim[0][16] = &out1;
+	matchAnimatedSprite[OUT].anim[0][17] = &out1;
+	matchAnimatedSprite[OUT].anim[0][18] = &out1;
+	matchAnimatedSprite[OUT].anim[0][19] = &out1;
+	matchAnimatedSprite[OUT].anim[0][20] = &out1;
+	matchAnimatedSprite[OUT].anim[0][21] = &out1;
+	matchAnimatedSprite[OUT].anim[0][22] = &out1;
+	matchAnimatedSprite[OUT].anim[0][23] = &out1;
+	matchAnimatedSprite[OUT].anim[0][24] = &out1;
+	matchAnimatedSprite[OUT].anim[0][25] = &out1;
+	matchAnimatedSprite[OUT].anim[0][26] = &out1;
+	matchAnimatedSprite[OUT].anim[0][27] = &out1;
+	matchAnimatedSprite[OUT].anim[0][28] = &out1;
+	matchAnimatedSprite[OUT].anim[0][29] = &out1;
+	matchAnimatedSprite[OUT].anim[0][30] = &out1;
+	matchAnimatedSprite[OUT].anim[0][31] = &out1;
+
+	// Rockford win
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][0] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][1] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][2] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][3] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][4] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][5] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][6] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][7] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][8] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][9] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][10] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][11] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][12] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][13] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][14] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][15] = &winRockford0;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][16] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][17] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][18] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][19] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][20] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][21] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][22] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][23] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][24] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][25] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][26] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][27] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][28] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][29] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][30] = &winRockford1;
+	matchAnimatedSprite[WIN_ROCKFORD].anim[0][31] = &winRockford1;
+
 	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
 	matchAnimatedSprite[ROCKFORD].animCount = 12;
 
 	matchAnimatedSprite[EXPLODE].currentAnim = 0;
 	matchAnimatedSprite[EXPLODE].animCount = 12;
-	
+
 	matchAnimatedSprite[DIAMOND].currentAnim = 0;
 	matchAnimatedSprite[DIAMOND].animCount = 32;
 
@@ -693,6 +781,12 @@ void MapUtils::cutTilesSheet()
 
 	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].currentAnim = 0;
 	matchAnimatedSprite[TRANSITIONAL_ROCKFORD].animCount = 32;
+
+	matchAnimatedSprite[OUT].currentAnim = 0;
+	matchAnimatedSprite[OUT].animCount = 32;
+
+	matchAnimatedSprite[WIN_ROCKFORD].currentAnim = 0;
+	matchAnimatedSprite[WIN_ROCKFORD].animCount = 32;
 }
 
 

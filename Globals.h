@@ -6,7 +6,7 @@
 #define FRAMES_BEFORE_RESTLESS 64
 #define TILES_DISPLAY_BUFFER 1
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMELOOP, GAMEOVER, GAMEWAIT } GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMELOOP, GAMEOVER, GAMEWAIT, GAMEWIN } GameScreen;
 extern GameScreen currentScreen;
 
 extern uint8_t quit;
@@ -22,11 +22,16 @@ extern uint8_t visibleX;
 extern uint8_t visibleY;
 extern uint32_t countFrames;
 extern uint32_t countFalls;
+extern uint32_t winFrame;
 extern uint8_t lastFrame;
 extern uint8_t lastMoveFrame;
 extern uint8_t push;
 extern uint8_t gameOver;
+extern uint8_t diamondsCount;
+extern uint8_t canExit;
+extern uint8_t exitX, exitY;
+extern uint8_t won;
 extern int fall;
 extern int which;
-extern CaveDecoder caveDecoder;
+extern CaveDecoder *caveDecoder;
 extern MapUtils *mapUtils;

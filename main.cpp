@@ -6,10 +6,15 @@
 
 void init()
 {
-	caveDecoder.DecodeCave(CaveDecoder::cave1);
+	caveDecoder = CaveDecoder::getInstance();
+	caveDecoder->DecodeCave(CaveDecoder::cave1);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet();
 	mapUtils->convertCaveData();
+	canExit = 0;
+	mapUtils->preOut.isAnim = 0;
+	diamondsCount = 0;
+	won = 0;
 }
 
 void keyPressed()
@@ -50,6 +55,8 @@ void prepareScroll()
 		previousRockFordY = rockFordY;
 		mapUtils->map[previousRockFordY][previousRockFordX].type = TRANSITIONAL_SPACE;
 		//mapUtils->map[previousRockFordY][previousRockFordX + 1].type = SPACE;
+		checkDiamond();
+
 	}
 	if (currentDirection == RIGHT) {
 		rockFordX++;
@@ -118,6 +125,41 @@ void prepareScroll()
 			scrollFlag = 0;
 			visibleY++;
 		}
+	}
+}
+
+void checkDiamond()
+{
+	// Check diamond
+	switch (currentDirection)
+	{
+	case RIGHT:
+		if (mapUtils->map[rockFordY][rockFordX + 1].type == DIAMOND) {
+			diamondsCount++;
+		}
+		break;
+	case LEFT:
+		if (mapUtils->map[rockFordY][rockFordX - 1].type == DIAMOND) {
+			diamondsCount++;
+		}
+		break;
+	case DOWN:
+		if (mapUtils->map[rockFordY + 1][rockFordX].type == DIAMOND) {
+			diamondsCount++;
+		}
+		break;
+	case UP:
+		if (mapUtils->map[rockFordY - 1][rockFordX].type == DIAMOND) {
+			diamondsCount++;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (diamondsCount == caveDecoder->diamondsNeeded) {
+		canExit = 1;
+		mapUtils->preOut.isAnim = 1;
 	}
 }
 
@@ -253,6 +295,12 @@ void animateRockford()
 		scrollFlag = 0;
 		countFalls = 1;	// if stationnary Rockford, next fall check at countFalls == 16
 
+		// check exit
+		if (canExit && rockFordX == exitX && rockFordY == exitY) {
+			won = 1;
+			winFrame = 0;
+		}
+
 		doFalls();
 
 		mapUtils->drawMap();
@@ -280,6 +328,18 @@ void endRockfordAt(int x, int y, int c)
 	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
 	DrawTexturePro(*(endSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
 }
+
+
+void winRockfordAt(int x, int y, int c)
+{
+	uint8_t currentAnim = mapUtils->matchAnimatedSprite[WIN_ROCKFORD].currentAnim;
+	uint8_t animCount = mapUtils->matchAnimatedSprite[WIN_ROCKFORD].animCount;
+	map::Sprite *endSprite = mapUtils->matchAnimatedSprite[WIN_ROCKFORD].anim[currentAnim][c % animCount];
+	Rectangle frameSource = { (float)endSprite->xsource, (float)endSprite->ysource, (float)endSprite->width, (float)endSprite->height };
+	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
+	DrawTexturePro(*(endSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
+}
+
 
 void doExplosion(map::Explosion &e)
 {
@@ -336,8 +396,9 @@ void iterateExplosions()
 
 void initGame()
 {
-	caveDecoder.DecodeCave(CaveDecoder::cave1);
+	caveDecoder->DecodeCave(CaveDecoder::cave1);
 	mapUtils->convertCaveData();
+	mapUtils->preOut.isAnim = 0;
 	gameOver = 0;
 	countX = 0;
 	countY = 0;
@@ -350,6 +411,9 @@ void initGame()
 	previousRockFordY = rockFordY;
 	visibleX = 3;
 	visibleY = 2;
+	canExit = 0;
+	diamondsCount = 0;
+	won = 0;
 }
 
 
@@ -409,8 +473,16 @@ void gameLoopScreen(int pause = 0)
 		iterateExplosions();
 	}
 
+	if (won) {
+		winRockfordAt(exitX - countX, exitY - countY, winFrame);
+		if (winFrame == 128) {
+			currentScreen = GAMEWIN;
+		}
+		winFrame++;
+	}
+
 	// Game informations
-	DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, SCREEN_WIDTH, TILE_SIZE * ZOOM, RAYWHITE);
+	drawGameStats();
 
 	EndDrawing();
 	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -425,11 +497,29 @@ void gameLoopScreen(int pause = 0)
 		countFrames = 0;
 }
 
+void drawGameStats()
+{
+	DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, SCREEN_WIDTH, TILE_SIZE * ZOOM, RAYWHITE);
+	DrawText("DIAMONDS", TILE_SIZE * ZOOM, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+	static char strDiamondsCount[20];
+	sprintf(strDiamondsCount, "%d/%d", diamondsCount, caveDecoder->diamondsNeeded);
+	DrawText(strDiamondsCount, TILE_SIZE * ZOOM * 4, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+}
+
 void gameOverScreen()
 {
 	BeginDrawing();
 	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
 	DrawText("GAME OVER", 20, 20, 40, DARKBLUE);
+	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
+	EndDrawing();
+}
+
+void gameWinScreen()
+{
+	BeginDrawing();
+	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
+	DrawText("YOU WON", 20, 20, 40, DARKBLUE);
 	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
 	EndDrawing();
 }
@@ -467,6 +557,14 @@ int main(void)
 			break;
 		case GAMEWAIT:
 			gameLoopScreen(1);
+			break;
+		case GAMEWIN:
+			gameWinScreen();
+			if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+			{
+				initGame();
+				currentScreen = GAMELOOP;
+			}
 			break;
 		}
 

@@ -8,6 +8,7 @@ class CaveDecoder
 {
 private:
 
+	static CaveDecoder *singleton;
 
 	/* Creature code conversion table */
 	/* Converts the C64 BoulderDash codes into the codes used by Jeff Bevis's Amiga implementation of BoulderDash. */
@@ -37,6 +38,13 @@ private:
 
 
 public:
+
+	UBYTE diamondWorth = 0;
+	UBYTE extraDiamondWorth = 0;
+	UBYTE diamondsNeeded = 0;
+
+	static CaveDecoder *getInstance();
+
 	static const UBYTE cave1[];
 	static const UBYTE cave2[];
 	static const UBYTE cave3[];

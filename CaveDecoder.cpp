@@ -2,6 +2,7 @@
 #include <assert.h>
 
 CAVE CaveDecoder::caveData;
+CaveDecoder *CaveDecoder::singleton = NULL;
 
 /* Creature code conversion table */
 /* Converts the C64 BoulderDash codes into the codes used by Jeff Bevis's
@@ -299,6 +300,11 @@ void CaveDecoder::DecodeCave(const UBYTE *aCaveData)
 	RandSeed1 = 0;
 	RandSeed2 = aCaveData[4];
 
+	// Diamonds stats
+	diamondWorth = aCaveData[2];
+	extraDiamondWorth = aCaveData[3];
+	diamondsNeeded = aCaveData[9];
+
 	/* Clear out the cave data to a null value */
 	for (x = 0; x < 40; x++) {
 		for (y = 0; y <= 23; y++) {
@@ -538,6 +544,14 @@ the low bit (bit zero) into the high bit (bit 7).
 
 	assert(((*RandSeed1 >= 0x00) && (*RandSeed1 <= 0xFF)));
 	assert(((*RandSeed2 >= 0x00) && (*RandSeed2 <= 0xFF)));
+}
+
+CaveDecoder *CaveDecoder::getInstance()
+{
+	if (singleton == NULL) {
+		singleton = new CaveDecoder();
+	}
+	return singleton;
 }
 
 

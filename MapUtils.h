@@ -27,7 +27,7 @@
 #define ROLL_LEFT 2
 #define ROLL_RIGHT 3
 
-#define SPRITES_COUNT 10
+#define SPRITES_COUNT 20
 #define BIGWALL 0
 #define WALL 1
 #define GRASS 2
@@ -38,6 +38,8 @@
 #define TRANSITIONAL_SPACE 7
 #define TRANSITIONAL_ROCKFORD 8
 #define EXPLODE 9
+#define OUT 10
+#define WIN_ROCKFORD 11
 
 namespace map {
 	struct Sprite {
@@ -88,15 +90,17 @@ public:
 	static MapUtils *getInstance();
 	~MapUtils();
 
-	static map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode;
+	static map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford;
 	static map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
 	static map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	static map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
 	static map::Sprite endRockford0, endRockford1;
+	static map::Sprite winRockford0, winRockford1;
 	static map::Sprite diamond0, diamond1, diamond2, diamond3;
 	static map::Sprite rock0, rock1, rock2, rock3;
 	static map::Sprite grass0, grass1, grass2, grass3;
 	static map::Sprite space0, space1, space2, space3;
+	static map::Sprite out0, out1;
 
 
 	static map::Sprite leftRockford0, leftRockford1, leftRockford2;
