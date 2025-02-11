@@ -1,10 +1,9 @@
 #pragma once
 #include <stdint.h>
 #include <set>
+#include <memory>
 #include "raylib.h"
 
-//#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-//#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAP_WIDTH 40
 #define MAP_HEIGHT 22
 #define TILES_DISPLAY_WIDTH 21
@@ -81,37 +80,35 @@ class MapUtils
 {
 private:
 
-	static Texture2D tiles;
-	static RenderTexture2D mapCache;
-	static MapUtils *singleton;
-	MapUtils();
+	Texture2D tiles;
+	RenderTexture2D mapCache;
+	static std::unique_ptr<MapUtils> singleton;
+	
 
 public:
 	static MapUtils *getInstance();
+	MapUtils();
 	~MapUtils();
 
-	static map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford;
-	static map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
-	static map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
-	static map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
-	static map::Sprite endRockford0, endRockford1;
-	static map::Sprite winRockford0, winRockford1;
-	static map::Sprite diamond0, diamond1, diamond2, diamond3;
-	static map::Sprite rock0, rock1, rock2, rock3;
-	static map::Sprite grass0, grass1, grass2, grass3;
-	static map::Sprite space0, space1, space2, space3;
-	static map::Sprite out0, out1;
-
-
-	static map::Sprite leftRockford0, leftRockford1, leftRockford2;
-	static map::Sprite rightRockford0, rightRockford1, rightRockford2;
-	static map::Sprite explode0, explode1;
-	static map::Object map[MAP_HEIGHT][MAP_WIDTH];
-	static map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
-	static map::Sprite *matchSprite[SPRITES_COUNT];
-	static map::MatchAnimatedSprite matchAnimatedSprite[SPRITES_COUNT];
-	static std::set<map::Explosion *> explosions;
-
+	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford;
+	map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
+	map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
+	map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
+	map::Sprite endRockford0, endRockford1;
+	map::Sprite winRockford0, winRockford1;
+	map::Sprite diamond0, diamond1, diamond2, diamond3;
+	map::Sprite rock0, rock1, rock2, rock3;
+	map::Sprite grass0, grass1, grass2, grass3;
+	map::Sprite space0, space1, space2, space3;
+	map::Sprite out0, out1;
+	map::Sprite leftRockford0, leftRockford1, leftRockford2;
+	map::Sprite rightRockford0, rightRockford1, rightRockford2;
+	map::Sprite explode0, explode1;
+	map::Object map[MAP_HEIGHT][MAP_WIDTH];
+	map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
+	map::Sprite *matchSprite[SPRITES_COUNT];
+	map::MatchAnimatedSprite matchAnimatedSprite[SPRITES_COUNT];
+	std::set<map::Explosion *> explosions;
 
 	void cutTilesSheet();
 	void convertCaveData();

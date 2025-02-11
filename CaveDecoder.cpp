@@ -2,7 +2,8 @@
 #include <assert.h>
 
 CAVE CaveDecoder::caveData;
-CaveDecoder *CaveDecoder::singleton = NULL;
+std::unique_ptr<CaveDecoder> CaveDecoder::singleton = NULL;
+
 
 /* Creature code conversion table */
 /* Converts the C64 BoulderDash codes into the codes used by Jeff Bevis's
@@ -82,9 +83,6 @@ const char *CaveDecoder::caveDescriptions[] =
 	"There is an enchanted wall at the bottom of the rock tunnel",
 	"The top of each square room is an enchanted wall, but you'll have to blast your way inside"
 };
-
-
-
 
 
 const UBYTE CaveDecoder::cave1[] =
@@ -548,10 +546,10 @@ the low bit (bit zero) into the high bit (bit 7).
 
 CaveDecoder *CaveDecoder::getInstance()
 {
-	if (singleton == NULL) {
-		singleton = new CaveDecoder();
+	if (singleton.get() == NULL) {
+		singleton = std::make_unique<CaveDecoder>();
 	}
-	return singleton;
+	return singleton.get();
 }
 
 

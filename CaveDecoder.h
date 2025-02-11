@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 typedef unsigned char UBYTE;
 typedef short objectType;
 typedef UBYTE CAVE[40][24];
@@ -8,7 +10,8 @@ class CaveDecoder
 {
 private:
 
-	static CaveDecoder *singleton;
+	//static CaveDecoder *singleton;
+	static std::unique_ptr<CaveDecoder> singleton;
 
 	/* Creature code conversion table */
 	/* Converts the C64 BoulderDash codes into the codes used by Jeff Bevis's Amiga implementation of BoulderDash. */

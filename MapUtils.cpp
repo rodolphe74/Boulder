@@ -4,32 +4,7 @@
 #include <algorithm>
 #include <stdio.h>
 
-MapUtils *MapUtils::singleton = NULL;
-map::Object MapUtils::map[MAP_HEIGHT][MAP_WIDTH];
-map::Object MapUtils::previousMap[MAP_HEIGHT][MAP_WIDTH];
-map::Sprite MapUtils::bigWall, MapUtils::wall, MapUtils::grass, MapUtils::space, MapUtils::diamond, MapUtils::rock, MapUtils::rockFord, MapUtils::explode;
-map::Sprite MapUtils::preOut, MapUtils::winRockford;
-
-map::Sprite MapUtils::waitRockford0, MapUtils::waitRockford1, MapUtils::waitRockford2, MapUtils::waitRockford3;
-map::Sprite MapUtils::upRockford0, MapUtils::upRockford1, MapUtils::upRockford2, MapUtils::upRockford3;
-map::Sprite MapUtils::downRockford0, MapUtils::downRockford1, MapUtils::downRockford2, MapUtils::downRockford3;
-map::Sprite MapUtils::leftRockford0, MapUtils::leftRockford1, MapUtils::leftRockford2;
-map::Sprite MapUtils::rightRockford0, MapUtils::rightRockford1, MapUtils::rightRockford2;
-map::Sprite MapUtils::endRockford0, MapUtils::endRockford1;
-map::Sprite MapUtils::winRockford0, MapUtils::winRockford1;
-map::Sprite MapUtils::explode0, MapUtils::explode1;
-map::Sprite MapUtils::diamond0, MapUtils::diamond1, MapUtils::diamond2, MapUtils::diamond3;
-map::Sprite MapUtils::rock0, MapUtils::rock1, MapUtils::rock2, MapUtils::rock3;
-map::Sprite MapUtils::grass0, MapUtils::grass1, MapUtils::grass2, MapUtils::grass3;
-map::Sprite MapUtils::space0, MapUtils::space1, MapUtils::space2, MapUtils::space3;
-map::Sprite MapUtils::out0, MapUtils::out1;
-
-
-map::Sprite *MapUtils::matchSprite[SPRITES_COUNT];
-map::MatchAnimatedSprite MapUtils::matchAnimatedSprite[SPRITES_COUNT];
-Texture2D MapUtils::tiles;
-RenderTexture2D MapUtils::mapCache;
-std::set<map::Explosion *> MapUtils::explosions;
+std::unique_ptr<MapUtils> MapUtils::singleton = NULL;
 
 void MapUtils::convertCaveData()
 {
@@ -83,8 +58,8 @@ void MapUtils::drawMap()
 		for (uint8_t x = 0; x < TILES_DISPLAY_WIDTH + 2 * TILES_DISPLAY_BUFFER; x++) {
 			hx = x * TILE_SIZE * ZOOM;
 			hy = y * TILE_SIZE * ZOOM;
-			int startX = std::min(std::max(0, x + countX - TILES_DISPLAY_BUFFER), MAP_WIDTH);
-			int startY = std::min(std::max(0, y + countY - TILES_DISPLAY_BUFFER), MAP_HEIGHT);
+			int startX = std::min(std::max(0, x + countX - TILES_DISPLAY_BUFFER), MAP_WIDTH - 1);
+			int startY = std::min(std::max(0, y + countY - TILES_DISPLAY_BUFFER), MAP_HEIGHT - 1);
 			/*sprite = matchSprite[map[y + countY][x + countX].type];*/
 			uint8_t type = map[startY][startX].type;
 			sprite = matchSprite[type];
@@ -274,10 +249,10 @@ MapUtils::MapUtils()
 
 MapUtils *MapUtils::getInstance()
 {
-	if (singleton == NULL) {
-		singleton = new MapUtils();
+	if (singleton.get() == NULL) {
+		singleton = std::make_unique<MapUtils>();
 	}
-	return singleton;
+	return singleton.get();
 }
 
 MapUtils::~MapUtils()
