@@ -31,7 +31,7 @@ cd Boulder
 cmake . -DCMAKE_TOOLCHAIN_FILE=[vcpkg_folder]\scripts\buildsystems\vcpkg.cmake
 .\Boulder.sln
 ```
-Then in Visual Studio, set Boulder as active project.
+Then in Visual Studio, set Boulder as active project and run it.
 
 ## XCode
 ```shell
@@ -47,3 +47,4 @@ cd debug
 cmake .. -DCMAKE_TOOLCHAIN_FILE=[vcpkg_folder]/scripts/buildsystems/vcpkg.cmake -GXcode
 open Boulder.xcodeproj
 ```
+Then in XCode set the Boulder project and run it.
