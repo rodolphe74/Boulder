@@ -24,7 +24,7 @@
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 .\vcpkg.exe install glfw3
-.\vcpkg.exe install ray lib
+.\vcpkg.exe install raylib
 cd ..
 git clone https://github.com/rodolphe74/Boulder.git
 cd Boulder
