@@ -24,7 +24,7 @@ void initScrollVars()
 void init()
 {
 	caveDecoder = CaveDecoder::getInstance();
-	caveDecoder->DecodeCave(CaveDecoder::cave2);
+	caveDecoder->DecodeCave(CaveDecoder::cave1);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet();
 	mapUtils->convertCaveData();
@@ -463,7 +463,7 @@ void gameWinScreen()
 
 void initGame()
 {
-	caveDecoder->DecodeCave(CaveDecoder::cave2);
+	caveDecoder->DecodeCave(CaveDecoder::cave1);
 	mapUtils->convertCaveData();
 	mapUtils->preOut.isAnim = 0;
 	gameOver = 0;
