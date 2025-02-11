@@ -19,7 +19,7 @@
 ```
 
 # Compilation
-## MacOs
+## XCode
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
