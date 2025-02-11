@@ -56,6 +56,9 @@ void MapUtils::convertCaveData()
 				break;
 			case 'X':
 				map[i][j] = { ROCKFORD, STATIONARY };
+				rockFordX = j;
+				rockFordY = i;
+				printf("Rockford at %d,%d\n", j, i + 2);
 				break;
 			case 'P':
 				map[i][j] = { OUT, STATIONARY };

@@ -4,10 +4,27 @@
 #include <iostream>
 #include "main.h"
 
+
+void initScrollVars()
+{
+	countX = rockFordX - SCROLL_BORDER;
+	if (countX < 0)
+		countX = 0;
+	if (countX > 19)
+		countX = 19;
+	countY = rockFordY - SCROLL_BORDER;
+	if (countY < 0)
+		countY = 0;
+	if (countY > 7)
+		countY = 7;
+	visibleX = rockFordX - countX;
+	visibleY = rockFordY - countY;
+}
+
 void init()
 {
 	caveDecoder = CaveDecoder::getInstance();
-	caveDecoder->DecodeCave(CaveDecoder::cave1);
+	caveDecoder->DecodeCave(CaveDecoder::cave2);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet();
 	mapUtils->convertCaveData();
@@ -15,7 +32,12 @@ void init()
 	mapUtils->preOut.isAnim = 0;
 	diamondsCount = 0;
 	won = 0;
+	canExitFrame = 0;
+	winFrame = 0;
+	initScrollVars();
 }
+
+
 
 void keyPressed()
 {
@@ -304,6 +326,7 @@ void animateRockford()
 		doFalls();
 
 		mapUtils->drawMap();
+		//printf("%d %d     %d %d      %d %d\n", rockFordX, rockFordY, countX, countY, visibleX, visibleY);
 	}
 	else {
 		keyFlag = 0;
@@ -338,6 +361,10 @@ void winRockfordAt(int x, int y, int c)
 	Rectangle frameSource = { (float)endSprite->xsource, (float)endSprite->ysource, (float)endSprite->width, (float)endSprite->height };
 	Rectangle frameDest = { (float)x * TILE_SIZE * ZOOM, (float)y * TILE_SIZE * ZOOM,(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
 	DrawTexturePro(*(endSprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
+}
+
+void exitRockfordAt(int x, int y, int c) {
+	DrawText("EXIT", x * TILE_SIZE * ZOOM + TILE_SIZE, y * TILE_SIZE * ZOOM - c, 12 * ZOOM, GREEN);
 }
 
 
@@ -393,10 +420,50 @@ void iterateExplosions()
 	}
 }
 
+void showExit()
+{
+	static int8_t exitX = 0, exitY = 0;
+	if (canExitFrame == 0) {
+		exitX = rockFordX - countX;
+		exitY = rockFordY - countY;
+	}
+	if (canExitFrame < 128) {
+		exitRockfordAt(exitX, exitY, canExitFrame);
+	}
+	canExitFrame += ZOOM;
+}
+
+void drawGameStats()
+{
+	DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, SCREEN_WIDTH, TILE_SIZE * ZOOM, RAYWHITE);
+	DrawText("DIAMONDS", TILE_SIZE * ZOOM, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+	static char strDiamondsCount[20];
+	sprintf(strDiamondsCount, "%d/%d", diamondsCount, caveDecoder->diamondsNeeded);
+	DrawText(strDiamondsCount, TILE_SIZE * ZOOM * 4, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+}
+
+void gameOverScreen()
+{
+	BeginDrawing();
+	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
+	DrawText("GAME OVER", 20, 20, 40, DARKBLUE);
+	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
+	EndDrawing();
+}
+
+void gameWinScreen()
+{
+	BeginDrawing();
+	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
+	DrawText("YOU WON", 20, 20, 40, DARKBLUE);
+	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
+	EndDrawing();
+}
+
 
 void initGame()
 {
-	caveDecoder->DecodeCave(CaveDecoder::cave1);
+	caveDecoder->DecodeCave(CaveDecoder::cave2);
 	mapUtils->convertCaveData();
 	mapUtils->preOut.isAnim = 0;
 	gameOver = 0;
@@ -404,8 +471,8 @@ void initGame()
 	countY = 0;
 	shiftX = 0;
 	shiftY = 0;
-	rockFordX = 3;
-	rockFordY = 2;
+	//rockFordX = 3;
+	//rockFordY = 2;
 	rockfordShift = 0;
 	previousRockFordX = rockFordX;
 	previousRockFordY = rockFordY;
@@ -414,6 +481,9 @@ void initGame()
 	canExit = 0;
 	diamondsCount = 0;
 	won = 0;
+	canExitFrame = 0;
+	winFrame = 0;
+	initScrollVars();
 }
 
 
@@ -473,6 +543,10 @@ void gameLoopScreen(int pause = 0)
 		iterateExplosions();
 	}
 
+	if (canExit) {
+		showExit();
+	}
+
 	if (won) {
 		winRockfordAt(exitX - countX, exitY - countY, winFrame);
 		if (winFrame == 128) {
@@ -497,32 +571,7 @@ void gameLoopScreen(int pause = 0)
 		countFrames = 0;
 }
 
-void drawGameStats()
-{
-	DrawRectangle(0, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM, SCREEN_WIDTH, TILE_SIZE * ZOOM, RAYWHITE);
-	DrawText("DIAMONDS", TILE_SIZE * ZOOM, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
-	static char strDiamondsCount[20];
-	sprintf(strDiamondsCount, "%d/%d", diamondsCount, caveDecoder->diamondsNeeded);
-	DrawText(strDiamondsCount, TILE_SIZE * ZOOM * 4, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
-}
 
-void gameOverScreen()
-{
-	BeginDrawing();
-	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
-	DrawText("GAME OVER", 20, 20, 40, DARKBLUE);
-	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
-	EndDrawing();
-}
-
-void gameWinScreen()
-{
-	BeginDrawing();
-	DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
-	DrawText("YOU WON", 20, 20, 40, DARKBLUE);
-	DrawText("PRESS ENTER to RESTART", 120, 220, 20, DARKBLUE);
-	EndDrawing();
-}
 
 
 int main(void)
