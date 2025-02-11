@@ -10,6 +10,7 @@ in a developper powershell :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
+.\bootstrap-vcpkg.bat
 .\vcpkg.exe install glfw3
 .\vcpkg.exe install raylib
 cd ..
