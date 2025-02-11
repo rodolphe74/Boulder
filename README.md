@@ -20,7 +20,7 @@
 
 # Compilation
 ## Visual Studio 2022
-in a developper powershell:
+in a developper powershell :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
@@ -35,7 +35,7 @@ cmake . -DCMAKE_TOOLCHAIN_FILE=[vcpkg_folder]\scripts\buildsystems\vcpkg.cmake
 Then in Visual Studio, set Boulder as active project and run it.
 
 ## XCode
-in a terminal:
+in a terminal :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
