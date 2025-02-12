@@ -6,10 +6,11 @@
 
 # Compilation
 ## Visual Studio 2022
-in a developper powershell :
+in a developer powershell :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
+.\bootstrap-vcpkg.bat
 .\vcpkg.exe install glfw3
 .\vcpkg.exe install raylib
 cd ..
@@ -25,6 +26,7 @@ in a terminal :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
+./bootstrap-vcpkg.sh
 ./vcpkg install glfw3
 ./vcpkg install raylib
 cd ..
