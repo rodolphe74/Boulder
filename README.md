@@ -6,7 +6,7 @@
 
 # Compilation
 ## Visual Studio 2022
-in a developper powershell :
+in a developer powershell :
 ```shell
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
