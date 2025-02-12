@@ -12,13 +12,14 @@ endif()
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(raylib CONFIG REQUIRED)
-add_executable(boulder main.cpp CaveDecoder.cpp Globals.cpp MapUtils.cpp)
+add_executable(boulder main.cpp GameContext.cpp Game.cpp CaveDecoder.cpp MapUtils.cpp)
 target_link_libraries(boulder PRIVATE raylib glfw)
 
 
 # Project creation on MacOs
 # git clone https://github.com/microsoft/vcpkg.git
 # cd vcpkg
+# ./bootstrap-vcpkg.sh
 # ./vcpkg install glfw3
 # ./vcpkg install ray lib
 # git clone https://github.com/rodolphe74/Boulder.git

@@ -1,12 +1,12 @@
 #include "CaveDecoder.h"
-#include "Globals.h"
 #include "MapUtils.h"
 #include <algorithm>
 #include <stdio.h>
 
+
 std::unique_ptr<MapUtils> MapUtils::singleton = NULL;
 
-void MapUtils::convertCaveData()
+void MapUtils::convertCaveData(GameContext *gc)
 {
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
@@ -31,14 +31,14 @@ void MapUtils::convertCaveData()
 				break;
 			case 'X':
 				map[i][j] = { ROCKFORD, STATIONARY };
-				rockFordX = j;
-				rockFordY = i;
+				gc->rockFordX = j;
+				gc->rockFordY = i;
 				printf("Rockford at %d,%d\n", j, i + 2);
 				break;
 			case 'P':
 				map[i][j] = { OUT, STATIONARY };
-				exitX = j;
-				exitY = i;
+				gc->exitX = j;
+				gc->exitY = i;
 				printf("Exit at %d,%d\n", j, i + 2);
 				break;
 			default:
@@ -49,7 +49,7 @@ void MapUtils::convertCaveData()
 	}
 }
 
-void MapUtils::drawMap()
+void MapUtils::drawMap(GameContext *gc)
 {
 	uint16_t hx, hy;
 	map::Sprite *sprite;
@@ -58,70 +58,70 @@ void MapUtils::drawMap()
 		for (uint8_t x = 0; x < TILES_DISPLAY_WIDTH + 2 * TILES_DISPLAY_BUFFER; x++) {
 			hx = x * TILE_SIZE * ZOOM;
 			hy = y * TILE_SIZE * ZOOM;
-			int startX = std::min(std::max(0, x + countX - TILES_DISPLAY_BUFFER), MAP_WIDTH - 1);
-			int startY = std::min(std::max(0, y + countY - TILES_DISPLAY_BUFFER), MAP_HEIGHT - 1);
+			int startX = std::min(std::max(0, x + gc->countX - TILES_DISPLAY_BUFFER), MAP_WIDTH - 1);
+			int startY = std::min(std::max(0, y + gc->countY - TILES_DISPLAY_BUFFER), MAP_HEIGHT - 1);
 			/*sprite = matchSprite[map[y + countY][x + countX].type];*/
 			uint8_t type = map[startY][startX].type;
 			sprite = matchSprite[type];
-			if ((type == ROCKFORD && rockfordAnimFlag && sprite->isAnim) || (type != ROCKFORD && sprite->isAnim)) {
-				uint8_t currentAnim = mapUtils->matchAnimatedSprite[type].currentAnim;
-				uint8_t animCount = mapUtils->matchAnimatedSprite[type].animCount;
-				sprite = matchAnimatedSprite[type].anim[currentAnim][countFrames % animCount];
+			if ((type == ROCKFORD && gc->rockfordAnimFlag && sprite->isAnim) || (type != ROCKFORD && sprite->isAnim)) {
+				uint8_t currentAnim = matchAnimatedSprite[type].currentAnim;
+				uint8_t animCount = matchAnimatedSprite[type].animCount;
+				sprite = matchAnimatedSprite[type].anim[currentAnim][gc->countFrames % animCount];
 			}
 			Rectangle frameSource = { (float)sprite->xsource, (float)sprite->ysource, (float)sprite->width, (float)sprite->height };
-			Rectangle frameDest = { (float)(hx - shiftX) - (TILE_SIZE * ZOOM), (float)(hy - shiftY) - (TILE_SIZE * ZOOM),(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
+			Rectangle frameDest = { (float)(hx - gc->shiftX) - (TILE_SIZE * ZOOM), (float)(hy - gc->shiftY) - (TILE_SIZE * ZOOM),(float)(TILE_SIZE * ZOOM), (float)(TILE_SIZE * ZOOM) };
 			DrawTexturePro(*(sprite->bitmap), frameSource, frameDest, { 0, 0 }, 0, WHITE);
 		}
 	}
 }
 
-int MapUtils::checkMove()
+int MapUtils::checkMove(GameContext *gc)
 {
-	if (currentDirection == LEFT && rockFordX > 0 &&
-		(map[rockFordY][rockFordX - 1].type == BIGWALL || map[rockFordY][rockFordX - 1].type == WALL || map[rockFordY][rockFordX - 1].type == ROCK)) {
+	if (gc->currentDirection == LEFT && gc->rockFordX > 0 &&
+		(map[gc->rockFordY][gc->rockFordX - 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX - 1].type == WALL || map[gc->rockFordY][gc->rockFordX - 1].type == ROCK)) {
 		return 0;
 	}
 
-	else if (currentDirection == RIGHT && rockFordX < MAP_WIDTH - 1 &&
-		(map[rockFordY][rockFordX + 1].type == BIGWALL || map[rockFordY][rockFordX + 1].type == WALL || map[rockFordY][rockFordX + 1].type == ROCK)) {
+	else if (gc->currentDirection == RIGHT && gc->rockFordX < MAP_WIDTH - 1 &&
+		(map[gc->rockFordY][gc->rockFordX + 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX + 1].type == WALL || map[gc->rockFordY][gc->rockFordX + 1].type == ROCK)) {
 		return 0;
 	}
 
-	else if (currentDirection == UP && rockFordY > 0 &&
-		(map[rockFordY - 1][rockFordX].type == BIGWALL || map[rockFordY - 1][rockFordX].type == WALL || map[rockFordY - 1][rockFordX].type == ROCK)) {
+	else if (gc->currentDirection == UP && gc->rockFordY > 0 &&
+		(map[gc->rockFordY - 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY - 1][gc->rockFordX].type == WALL || map[gc->rockFordY - 1][gc->rockFordX].type == ROCK)) {
 		return 0;
 	}
 
-	else if (currentDirection == DOWN && rockFordY < MAP_HEIGHT - 1 &&
-		(map[rockFordY + 1][rockFordX].type == BIGWALL || map[rockFordY + 1][rockFordX].type == WALL || map[rockFordY + 1][rockFordX].type == ROCK)) {
+	else if (gc->currentDirection == DOWN && gc->rockFordY < MAP_HEIGHT - 1 &&
+		(map[gc->rockFordY + 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY + 1][gc->rockFordX].type == WALL || map[gc->rockFordY + 1][gc->rockFordX].type == ROCK)) {
 		return 0;
 	}
 	return 1;
 }
 
-int MapUtils::checkPush()
+int MapUtils::checkPush(GameContext *gc)
 {
-	if (currentDirection == RIGHT && map[rockFordY][rockFordX + 1].type == ROCK && rockFordX <= MAP_WIDTH - 3 && map[rockFordY][rockFordX + 2].type == SPACE) {
-		push++;
+	if (gc->currentDirection == RIGHT && map[gc->rockFordY][gc->rockFordX + 1].type == ROCK && gc->rockFordX <= MAP_WIDTH - 3 && map[gc->rockFordY][gc->rockFordX + 2].type == SPACE) {
+		gc->push++;
 		return RIGHT;
 	}
-	else if (currentDirection == LEFT && map[rockFordY][rockFordX - 1].type == ROCK && rockFordX > 1 && map[rockFordY][rockFordX - 2].type == SPACE) {
-		push++;
+	else if (gc->currentDirection == LEFT && map[gc->rockFordY][gc->rockFordX - 1].type == ROCK && gc->rockFordX > 1 && map[gc->rockFordY][gc->rockFordX - 2].type == SPACE) {
+		gc->push++;
 		return LEFT;
 	}
 
 	return 0;
 }
 
-void MapUtils::moveStone()
+void MapUtils::moveStone(GameContext *gc)
 {
-	if (currentDirection == LEFT) {
-		map[rockFordY][rockFordX - 2].type = map[rockFordY][rockFordX - 1].type;
-		map[rockFordY][rockFordX - 1].type = SPACE;
+	if (gc->currentDirection == LEFT) {
+		map[gc->rockFordY][gc->rockFordX - 2].type = map[gc->rockFordY][gc->rockFordX - 1].type;
+		map[gc->rockFordY][gc->rockFordX - 1].type = SPACE;
 	}
-	else if (currentDirection == RIGHT) {
-		map[rockFordY][rockFordX + 2].type = map[rockFordY][rockFordX + 1].type;
-		map[rockFordY][rockFordX + 1].type = SPACE;
+	else if (gc->currentDirection == RIGHT) {
+		map[gc->rockFordY][gc->rockFordX + 2].type = map[gc->rockFordY][gc->rockFordX + 1].type;
+		map[gc->rockFordY][gc->rockFordX + 1].type = SPACE;
 	}
 }
 
@@ -200,14 +200,14 @@ void MapUtils::scanBouldersAndDiamonds(int x, int y)
 
 }
 
-void MapUtils::updateFallingBouldersAndDiamonds(int x, int y)
+void MapUtils::updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc)
 {
 	if (map[y][x].mark == 0 && (map[y][x].type == ROCK || map[y][x].type == DIAMOND) && map[y][x].falling == FALL) {
 
 		if (map[y + 1][x].type == ROCKFORD) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
 			map::Explosion *e = new map::Explosion;
-			*e = { (uint16_t)(x - countX), (uint16_t)(y + 1 - countY), ROCKFORD, 128 };
+			*e = { (uint16_t)(x - gc->countX), (uint16_t)(y + 1 - gc->countY), ROCKFORD, 128 };
 			explosions.insert(e);
 		}
 
@@ -257,12 +257,13 @@ MapUtils *MapUtils::getInstance()
 
 MapUtils::~MapUtils()
 {
+	printf("MapUtils destruction\n");
 	UnloadTexture(tiles);
 	UnloadRenderTexture(mapCache);
 }
 
 
-void MapUtils::cutTilesSheet()
+void MapUtils::cutTilesSheet(GameContext *gc)
 {
 	bigWall = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
 	wall = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
@@ -288,17 +289,17 @@ void MapUtils::cutTilesSheet()
 	matchSprite[OUT] = &preOut;
 	matchSprite[WIN_ROCKFORD] = &winRockford;
 
-	countX = 0;
-	countY = 0;
-	shiftX = 0;
-	shiftY = 0;
-	rockFordX = 3;
-	rockFordY = 2;
-	rockfordShift = 0;
-	previousRockFordX = rockFordX;
-	previousRockFordY = rockFordY;
-	visibleX = 3;
-	visibleY = 2;
+	gc->countX = 0;
+	gc->countY = 0;
+	gc->shiftX = 0;
+	gc->shiftY = 0;
+	gc->rockFordX = 3;
+	gc->rockFordY = 2;
+	gc->rockfordShift = 0;
+	gc->previousRockFordX = gc->rockFordX;
+	gc->previousRockFordY = gc->rockFordY;
+	gc->visibleX = 3;
+	gc->visibleY = 2;
 
 	// animated sprites
 	waitRockford0 = { 16 * 0, 16 * 0, 16, 16, 0, &tiles };

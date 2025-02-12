@@ -1,8 +1,9 @@
 #pragma once
-#include <stdint.h>
-#include <set>
-#include <memory>
+#include "GameContext.h"
 #include "raylib.h"
+#include <memory>
+#include <set>
+#include <stdint.h>
 
 #define MAP_WIDTH 40
 #define MAP_HEIGHT 22
@@ -110,17 +111,17 @@ public:
 	map::MatchAnimatedSprite matchAnimatedSprite[SPRITES_COUNT];
 	std::set<map::Explosion *> explosions;
 
-	void cutTilesSheet();
-	void convertCaveData();
-	void drawMap();
-	int checkMove();
-	int checkPush();
-	void moveStone();
+	void cutTilesSheet(GameContext *gc);
+	void convertCaveData(GameContext *gc);
+	void drawMap(GameContext *gc);
+	int checkMove(GameContext *gc);
+	int checkPush(GameContext *gc);
+	void moveStone(GameContext *gc);
 	int getType(int x, int y);
 	int isEmpty(int x, int y);
 	void unmarkBouldersAndDiamonds();
 	int canShift(int x, int y);
 	void move(int x, int y, int direction);
 	void scanBouldersAndDiamonds(int x, int y);
-	void updateFallingBouldersAndDiamonds(int x, int y);
+	void updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc);
 };
