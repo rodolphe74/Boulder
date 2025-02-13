@@ -40,6 +40,11 @@
 #define EXPLODE 9
 #define OUT 10
 #define WIN_ROCKFORD 11
+#define FIREFLY 12
+#define UNKNOWN 13
+
+uint8_t LEFT_DIRECTION[];
+uint8_t RIGHT_DIRECTION[];
 
 namespace map {
 	struct Sprite {
@@ -54,6 +59,7 @@ namespace map {
 		uint8_t type;
 		uint8_t falling;
 		uint8_t mark;
+		uint8_t direction;
 	};
 	typedef struct Object Object;
 
@@ -91,7 +97,7 @@ public:
 	MapUtils();
 	~MapUtils();
 
-	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford;
+	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford, firefly;
 	map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
 	map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
@@ -105,6 +111,8 @@ public:
 	map::Sprite leftRockford0, leftRockford1, leftRockford2;
 	map::Sprite rightRockford0, rightRockford1, rightRockford2;
 	map::Sprite explode0, explode1;
+	map::Sprite firefly0, firefly1, firefly2, firefly3;
+
 	map::Object map[MAP_HEIGHT][MAP_WIDTH];
 	map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
 	map::Sprite *matchSprite[SPRITES_COUNT];

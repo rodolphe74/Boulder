@@ -6,6 +6,9 @@
 
 std::unique_ptr<MapUtils> MapUtils::singleton = NULL;
 
+uint8_t LEFT_DIRECTION[] = { 0, LEFT, RIGHT, DOWN, UP };
+uint8_t RIGHT_DIRECTION[] = { 0, RIGHT, LEFT, UP, DOWN };
+
 void MapUtils::convertCaveData(GameContext *gc)
 {
 	for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -40,6 +43,9 @@ void MapUtils::convertCaveData(GameContext *gc)
 				gc->exitX = j;
 				gc->exitY = i;
 				printf("Exit at %d,%d\n", j, i + 2);
+				break;
+			case 'q':
+				map[i][j] = { FIREFLY, STATIONARY, 0, LEFT };
 				break;
 			default:
 				printf("Unknown:%c at %d,%d\n", CaveDecoder::caveData[j][i + 2], j, i + 2);
@@ -275,6 +281,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	winRockford = { 16 * 2, 16 * 0, 16, 16, 1, &tiles };
 	explode = { 16 * 11, 16 * 8, 16, 16, 1, &tiles };
 	preOut = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
+	firefly = { 16 * 9, 16 * 8, 16, 16, 1, &tiles };
 
 	matchSprite[BIGWALL] = &bigWall;
 	matchSprite[WALL] = &wall;
@@ -288,6 +295,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchSprite[EXPLODE] = &explode;
 	matchSprite[OUT] = &preOut;
 	matchSprite[WIN_ROCKFORD] = &winRockford;
+	matchSprite[FIREFLY] = &firefly;
 
 	gc->countX = 0;
 	gc->countY = 0;
@@ -356,6 +364,11 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 
 	winRockford0 = { 16 * 2, 16 * 0, 16, 16, 0, &tiles };
 	winRockford1 = { 16 * 3, 16 * 0, 16, 16, 0, &tiles };
+
+	firefly0 = { 16 * 9, 16 * 8, 16, 16, 0, &tiles };
+	firefly1 = { 16 * 9, 16 * 9, 16, 16, 0, &tiles };
+	firefly2 = { 16 * 9, 16 * 10, 16, 16, 0, &tiles };
+	firefly3 = { 16 * 9, 16 * 11, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -736,6 +749,40 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchAnimatedSprite[WIN_ROCKFORD].anim[0][30] = &winRockford1;
 	matchAnimatedSprite[WIN_ROCKFORD].anim[0][31] = &winRockford1;
 
+	// firefly
+	matchAnimatedSprite[FIREFLY].anim[0][0] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][1] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][2] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][3] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][4] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][5] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][6] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][7] = &firefly0;
+	matchAnimatedSprite[FIREFLY].anim[0][8] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][9] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][10] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][11] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][12] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][13] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][14] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][15] = &firefly1;
+	matchAnimatedSprite[FIREFLY].anim[0][16] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][17] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][18] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][19] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][20] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][21] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][22] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][23] = &firefly2;
+	matchAnimatedSprite[FIREFLY].anim[0][24] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][25] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][26] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][27] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][28] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][29] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][30] = &firefly3;
+	matchAnimatedSprite[FIREFLY].anim[0][31] = &firefly3;
+
 	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
 	matchAnimatedSprite[ROCKFORD].animCount = 12;
@@ -766,6 +813,9 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 
 	matchAnimatedSprite[WIN_ROCKFORD].currentAnim = 0;
 	matchAnimatedSprite[WIN_ROCKFORD].animCount = 32;
+
+	matchAnimatedSprite[FIREFLY].currentAnim = 0;
+	matchAnimatedSprite[FIREFLY].animCount = 32;
 }
 
 

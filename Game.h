@@ -19,10 +19,7 @@ public:
 
 	static Game *getInstance();
 	Game();
-	~Game() 
-	{
-		printf("Game destruction\n");
-	}
+	~Game();
 
 	GameScreen currentScreen;
 	CaveDecoder *caveDecoder;
@@ -51,6 +48,10 @@ public:
 	void gameWinScreen();
 	void initGame();
 	void gameLoopScreen(int pause = 0);
-
+	uint8_t checkLeft(int x, int y);
+	void moveDirection(int x, int y);
+	void checkRockford(int y, int x);
+	void checkEnnemy(int y, int x);
+	void animateFireflies();
 };
 
