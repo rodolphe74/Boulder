@@ -48,7 +48,7 @@ void Game::initScrollVars()
 void Game::init()
 {
 	caveDecoder = CaveDecoder::getInstance();
-	caveDecoder->DecodeCave(CaveDecoder::cave2);
+	caveDecoder->DecodeCave(CaveDecoder::cave4);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet(gameContext);
 	mapUtils->convertCaveData(gameContext);
@@ -350,6 +350,7 @@ void Game::animateRockford()
 
 		doFalls();
 		animateFireflies();
+		animateButterflies();
 
 		mapUtils->drawMap(gameContext);
 		//printf("%d %d     %d %d      %d %d\n", rockFordX, rockFordY, countX, countY, visibleX, visibleY);
@@ -489,7 +490,7 @@ void Game::gameWinScreen()
 
 void Game::initGame()
 {
-	caveDecoder->DecodeCave(CaveDecoder::cave2);
+	caveDecoder->DecodeCave(CaveDecoder::cave4);
 	mapUtils->convertCaveData(gameContext);
 	mapUtils->preOut.isAnim = 0;
 	gameContext->gameOver = 0;
@@ -564,6 +565,7 @@ void Game::gameLoopScreen(int pause)
 	if (!gameContext->rockfordAnimFlag && (gameContext->countFalls % 16 == 0)) {
 		doFalls();
 		animateFireflies();
+		animateButterflies();
 	}
 
 	if (mapUtils->explosions.size()) {
@@ -602,6 +604,25 @@ uint8_t Game::checkLeft(int x, int y)
 {
 	map::Object o = mapUtils->map[y][x];
 	uint8_t dir = LEFT_DIRECTION[o.direction];
+	if (dir == LEFT && x > 0) {
+		return mapUtils->map[y][x - 1].type;
+	}
+	else if (dir == RIGHT && x >= 0 && x < MAP_WIDTH - 1) {
+		return mapUtils->map[y][x + 1].type;
+	}
+	else if (dir == UP && y > 0) {
+		return mapUtils->map[y - 1][x].type;
+	}
+	else if (dir == DOWN && y >= 0 && y < MAP_HEIGHT - 1) {
+		return mapUtils->map[y + 1][x].type;
+	}
+	return UNKNOWN;
+}
+
+uint8_t Game::checkRight(int x, int y)
+{
+	map::Object o = mapUtils->map[y][x];
+	uint8_t dir = RIGHT_DIRECTION[o.direction];
 	if (dir == LEFT && x > 0) {
 		return mapUtils->map[y][x - 1].type;
 	}
@@ -667,8 +688,8 @@ void Game::checkRockford(int y, int x)
 
 void Game::checkEnnemy(int y, int x)
 {
-	if (mapUtils->map[y][x].type == FIREFLY) {
-		printf("HIT FIREFLY AT %d,%d\n", y, x);
+	if (mapUtils->map[y][x].type == FIREFLY || mapUtils->map[y][x].type == BUTTERFLY) {
+		printf("HIT FIREFLY OR BUTTERFLY AT %d,%d\n", y, x);
 		map::Explosion *e = new map::Explosion;
 		*e = { (uint16_t)(x - gameContext->countX), (uint16_t)(y - gameContext->countY), ROCKFORD, 128 };
 		mapUtils->explosions.insert(e);
@@ -687,7 +708,7 @@ void Game::animateFireflies()
 	for (int i = 0; i < MAP_HEIGHT; i++) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			if (mapUtils->map[i][j].type == FIREFLY && mapUtils->map[i][j].mark == 0) {
-				printf("found firefly at %d,%d -> %d - %d\n", j, i, mapUtils->map[i][j].direction, checkLeft(j, i));
+				//printf("found firefly at %d,%d -> %d - %d\n", j, i, mapUtils->map[i][j].direction, checkLeft(j, i));
 				if (j > 0 && mapUtils->map[i][j].direction == LEFT) {
 					if (checkLeft(j, i) == SPACE || checkLeft(j, i) == ROCKFORD || checkLeft(j, i) == TRANSITIONAL_ROCKFORD) {
 						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
@@ -734,6 +755,72 @@ void Game::animateFireflies()
 					}
 					else {
 						mapUtils->map[i][j].direction = RIGHT_DIRECTION[mapUtils->map[i][j].direction];
+					}
+				}
+			}
+		}
+	}
+}
+
+void Game::animateButterflies()
+{
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (mapUtils->map[i][j].type == BUTTERFLY) {
+				mapUtils->map[i][j].mark = 0;
+			}
+		}
+	}
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (mapUtils->map[i][j].type == BUTTERFLY && mapUtils->map[i][j].mark == 0) {
+				//printf("found firefly at %d,%d -> %d - %d\n", j, i, mapUtils->map[i][j].direction, checkLeft(j, i));
+				if (j > 0 && mapUtils->map[i][j].direction == LEFT) {
+					if (checkRight(j, i) == SPACE || checkRight(j, i) == ROCKFORD || checkRight(j, i) == TRANSITIONAL_ROCKFORD) {
+						mapUtils->map[i][j].direction = RIGHT_DIRECTION[mapUtils->map[i][j].direction];
+						moveDirection(j, i);
+					}
+					else if (mapUtils->map[i][j - 1].type == SPACE) {
+						moveDirection(j, i);
+					}
+					else {
+						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
+					}
+				}
+				else if (j < MAP_WIDTH - 1 && mapUtils->map[i][j].direction == RIGHT) {
+					if (checkRight(j, i) == SPACE || checkRight(j, i) == ROCKFORD || checkRight(j, i) == TRANSITIONAL_ROCKFORD) {
+						mapUtils->map[i][j].direction = RIGHT_DIRECTION[mapUtils->map[i][j].direction];
+						moveDirection(j, i);
+					}
+					else if (mapUtils->map[i][j + 1].type == SPACE) {
+						moveDirection(j, i);
+					}
+					else {
+						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
+					}
+				}
+				else if (i > 0 && mapUtils->map[i][j].direction == UP) {
+					if (checkRight(j, i) == SPACE || checkRight(j, i) == ROCKFORD || checkRight(j, i) == TRANSITIONAL_ROCKFORD) {
+						mapUtils->map[i][j].direction = RIGHT_DIRECTION[mapUtils->map[i][j].direction];
+						moveDirection(j, i);
+					}
+					else if (mapUtils->map[i - 1][j].type == SPACE) {
+						moveDirection(j, i);
+					}
+					else {
+						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
+					}
+				}
+				else if (i < MAP_HEIGHT - 1 && mapUtils->map[i][j].direction == DOWN) {
+					if (checkRight(j, i) == SPACE || checkRight(j, i) == ROCKFORD || checkRight(j, i) == TRANSITIONAL_ROCKFORD) {
+						mapUtils->map[i][j].direction = RIGHT_DIRECTION[mapUtils->map[i][j].direction];
+						moveDirection(j, i);
+					}
+					else if (mapUtils->map[i + 1][j].type == SPACE) {
+						moveDirection(j, i);
+					}
+					else {
+						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
 					}
 				}
 			}

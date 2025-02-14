@@ -49,9 +49,11 @@ public:
 	void initGame();
 	void gameLoopScreen(int pause = 0);
 	uint8_t checkLeft(int x, int y);
+	uint8_t checkRight(int x, int y);
 	void moveDirection(int x, int y);
 	void checkRockford(int y, int x);
 	void checkEnnemy(int y, int x);
 	void animateFireflies();
+	void animateButterflies();
 };
 

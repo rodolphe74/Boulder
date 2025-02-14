@@ -42,6 +42,7 @@
 #define WIN_ROCKFORD 11
 #define FIREFLY 12
 #define UNKNOWN 13
+#define BUTTERFLY 14
 
 uint8_t LEFT_DIRECTION[];
 uint8_t RIGHT_DIRECTION[];
@@ -97,7 +98,7 @@ public:
 	MapUtils();
 	~MapUtils();
 
-	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford, firefly;
+	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford, firefly, butterfly;
 	map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
 	map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
@@ -112,6 +113,7 @@ public:
 	map::Sprite rightRockford0, rightRockford1, rightRockford2;
 	map::Sprite explode0, explode1;
 	map::Sprite firefly0, firefly1, firefly2, firefly3;
+	map::Sprite butterfly0, butterfly1, butterfly2, butterfly3;
 
 	map::Object map[MAP_HEIGHT][MAP_WIDTH];
 	map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];
