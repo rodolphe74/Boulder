@@ -52,7 +52,7 @@ public:
 	uint8_t checkRight(int x, int y);
 	void moveDirection(int x, int y);
 	void checkRockford(int y, int x);
-	void checkEnnemy(int y, int x);
+	void checkEnemy(int y, int x);
 	void animateFireflies();
 	void animateButterflies();
 };
