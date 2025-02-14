@@ -44,8 +44,8 @@
 #define UNKNOWN 13
 #define BUTTERFLY 14
 
-uint8_t LEFT_DIRECTION[];
-uint8_t RIGHT_DIRECTION[];
+extern uint8_t LEFT_DIRECTION[];
+extern uint8_t RIGHT_DIRECTION[];
 
 namespace map {
 	struct Sprite {

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(Boulder)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 file(COPY Resources DESTINATION ${CMAKE_BINARY_DIR})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
