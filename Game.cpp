@@ -1,13 +1,18 @@
 #include "Game.h"
 
-std::unique_ptr<Game> Game::singleton = NULL;
+Game *Game::singleton = nullptr;
 
 Game *Game::getInstance()
 {
-	if (singleton.get() == NULL) {
-		singleton = std::make_unique<Game>();
+	if (singleton== NULL) {
+		singleton = new Game();
 	}
-	return singleton.get();
+	return singleton;
+}
+
+void Game::releaseInstance()
+{
+	delete singleton;
 }
 
 Game::Game()
@@ -20,13 +25,7 @@ Game::Game()
 
 Game::~Game()
 {
-	printf("Game destruction");
-	//std::set<map::Explosion *>::iterator it;
-	//for (it = mapUtils->explosions.begin(); it != mapUtils->explosions.end();) {
-	//	map::Explosion *e = *it;
-	//	delete(*it);
-	//	mapUtils->explosions.erase(it++);
-	//}
+	printf("Game destruction\n");
 }
 
 void Game::initScrollVars()

@@ -3,9 +3,7 @@
 #include <algorithm>
 #include <stdio.h>
 
-
-std::unique_ptr<MapUtils> MapUtils::singleton = NULL;
-
+MapUtils *MapUtils::singleton = nullptr;
 uint8_t LEFT_DIRECTION[] = { 0, LEFT, RIGHT, DOWN, UP };
 uint8_t RIGHT_DIRECTION[] = { 0, RIGHT, LEFT, UP, DOWN };
 
@@ -258,10 +256,15 @@ MapUtils::MapUtils()
 
 MapUtils *MapUtils::getInstance()
 {
-	if (singleton.get() == NULL) {
-		singleton = std::make_unique<MapUtils>();
+	if (singleton == NULL) {
+		singleton = new MapUtils();
 	}
-	return singleton.get();
+	return singleton;
+}
+
+void MapUtils::releaseInstance()
+{
+	delete singleton;
 }
 
 MapUtils::~MapUtils()

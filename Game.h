@@ -13,13 +13,16 @@ typedef enum GameScreen { LOGO = 0, TITLE, GAMELOOP, GAMEOVER, GAMEWAIT, GAMEWIN
 class Game
 {
 private:
-	static std::unique_ptr<Game> singleton;
+	// static std::unique_ptr<Game> singleton;
+	static Game *singleton;
+	Game();
+	~Game();
 
 public:
 
 	static Game *getInstance();
-	Game();
-	~Game();
+	static void releaseInstance();
+
 
 	GameScreen currentScreen;
 	CaveDecoder *caveDecoder;

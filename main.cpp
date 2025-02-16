@@ -3,17 +3,18 @@
 #include <chrono>
 #include <iostream>
 
-GameContext *gameContext;
-Game *game;
-
 int main(void)
 {
 	const int screenWidth = 1008;
 	const int screenHeight = 768;
-	gameContext = GameContext::getInstance();
-	game = Game::getInstance();
+	
 
 	InitWindow(screenWidth, screenHeight, "Boulder Dash");
+
+	GameContext *gameContext = GameContext::getInstance();
+	MapUtils::getInstance();
+	Game *game = Game::getInstance();
+	
 
 	//int refreshRate = GetMonitorRefreshRate(0);
 	SetTargetFPS(75);
@@ -51,6 +52,11 @@ int main(void)
 			break;
 		}
 	}
+
+
+	GameContext::releaseInstance();
+	MapUtils::releaseInstance();
+	Game::releaseInstance();
 
 	CloseWindow();        // Close window and OpenGL context
 	return 0;

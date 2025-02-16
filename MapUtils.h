@@ -90,13 +90,13 @@ private:
 
 	Texture2D tiles;
 	RenderTexture2D mapCache;
-	static std::unique_ptr<MapUtils> singleton;
-	
+	static MapUtils *singleton;
+	MapUtils();
+	~MapUtils();
 
 public:
 	static MapUtils *getInstance();
-	MapUtils();
-	~MapUtils();
+	static void releaseInstance();
 
 	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford, firefly, butterfly;
 	map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;

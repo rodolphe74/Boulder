@@ -1,11 +1,16 @@
 #include "GameContext.h"
 
-std::unique_ptr<GameContext> GameContext::singleton = nullptr;
+GameContext *GameContext::singleton;
 
 GameContext *GameContext::getInstance()
 {
-	if (singleton.get() == nullptr) {
-		singleton = std::make_unique<GameContext>();
+	if (singleton == nullptr) {
+		singleton = new GameContext();
 	}
-	return singleton.get();
+	return singleton;
+}
+
+void GameContext::releaseInstance()
+{
+	delete singleton;
 }

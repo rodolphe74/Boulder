@@ -10,13 +10,16 @@
 
 class GameContext
 {
-public:
-	static std::unique_ptr<GameContext> singleton;
-	static GameContext *getInstance();
+private:
 	GameContext() {};
 	~GameContext() {
 		printf("GameContext destruction\n");
 	}
+public:
+	//static std::unique_ptr<GameContext> singleton;
+	static GameContext *singleton;
+	static GameContext *getInstance();
+	static void releaseInstance();
 
 	uint8_t quit = 0;
 	uint8_t scrollFlag = 0;
