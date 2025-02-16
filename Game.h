@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include <memory>
 #include "CaveDecoder.h"
 #include "MapUtils.h"
 #include "GameContext.h"
