@@ -191,7 +191,7 @@ void MapUtils::move(int x, int y, int direction)
 
 void MapUtils::scanBouldersAndDiamonds(int x, int y)
 {
-	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE) && map[y][x].falling == STATIONARY) {
+	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = FALL;
 	}
 
@@ -203,7 +203,7 @@ void MapUtils::scanBouldersAndDiamonds(int x, int y)
 		map[y][x].falling = ROLL_RIGHT;
 	}
 
-	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD) && map[y][x].falling == FALL) {
+	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD && map[y + 1][x].type != BUTTERFLY && map[y + 1][x].type != FIREFLY) && map[y][x].falling == FALL) {
 		map[y][x].falling = STATIONARY;
 	}
 
@@ -213,10 +213,10 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc)
 {
 	if (map[y][x].mark == 0 && (map[y][x].type == ROCK || map[y][x].type == DIAMOND) && map[y][x].falling == FALL) {
 
-		if (map[y + 1][x].type == ROCKFORD) {
+		if (map[y + 1][x].type == ROCKFORD || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
 			map::Explosion *e = new map::Explosion;
-			*e = { (uint16_t)(x - gc->countX), (uint16_t)(y + 1 - gc->countY), ROCKFORD, 128 };
+			*e = { (uint16_t)x, (uint16_t)(y + 1), map[y + 1][x].type, 128 };
 			explosions.insert(e);
 		}
 
@@ -267,6 +267,10 @@ MapUtils *MapUtils::getInstance()
 MapUtils::~MapUtils()
 {
 	printf("MapUtils destruction\n");
+	std::set<map::Explosion *>::iterator it;
+	for (it = explosions.begin(); it != explosions.end(); it++) {
+		delete(*it);
+	}
 	UnloadTexture(tiles);
 	UnloadRenderTexture(mapCache);
 }

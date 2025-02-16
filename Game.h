@@ -47,12 +47,14 @@ public:
 	void gameOverScreen();
 	void gameWinScreen();
 	void initGame();
-	void gameLoopScreen(int pause = 0);
-	uint8_t checkLeft(int x, int y);
-	uint8_t checkRight(int x, int y);
+	void gameLoopScreen();
+	map::Object checkLeft(int x, int y);
+	map::Object checkRight(int x, int y);
 	void moveDirection(int x, int y);
 	void checkRockford(int y, int x);
 	void checkEnemy(int y, int x);
+	void checkFalling(int y, int x);
+	void eraseBox(int y, int x);
 	void animateFireflies();
 	void animateButterflies();
 };

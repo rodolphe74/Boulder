@@ -41,5 +41,6 @@ public:
 	uint8_t canExit = 0;
 	uint8_t exitX = 0, exitY = 0;
 	uint8_t won = 0;
+	uint8_t pause = 0;
 };
 

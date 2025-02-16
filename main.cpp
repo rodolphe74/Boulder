@@ -38,7 +38,8 @@ int main(void)
 			}
 			break;
 		case GAMEWAIT:
-			game->gameLoopScreen(1);
+			gameContext->pause = 1;
+			game->gameLoopScreen();
 			break;
 		case GAMEWIN:
 			game->gameWinScreen();
