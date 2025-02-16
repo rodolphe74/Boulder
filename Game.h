@@ -52,7 +52,7 @@ public:
 	map::Object checkRight(int x, int y);
 	void moveDirection(int x, int y);
 	void checkRockford(int y, int x);
-	void checkEnemy(int y, int x);
+	void checkEnemyOnRockfordMove(int y, int x);
 	void checkFalling(int y, int x);
 	void eraseBox(int y, int x);
 	void animateFireflies();

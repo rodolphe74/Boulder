@@ -108,7 +108,7 @@ void Game::prepareScroll()
 	}
 	if (gameContext->currentDirection == RIGHT) {
 		gameContext->rockFordX++;
-		checkEnemy(gameContext->rockFordY, gameContext->rockFordX);
+		checkEnemyOnRockfordMove(gameContext->rockFordY, gameContext->rockFordX);
 		mapUtils->map[gameContext->rockFordY][gameContext->rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (gameContext->visibleX > TILES_DISPLAY_WIDTH - SCROLL_BORDER) {
 			if (gameContext->countX < MAP_WIDTH - TILES_DISPLAY_WIDTH) {
@@ -126,7 +126,7 @@ void Game::prepareScroll()
 	}
 	else if (gameContext->currentDirection == LEFT) {
 		gameContext->rockFordX--;
-		checkEnemy(gameContext->rockFordY, gameContext->rockFordX);
+		checkEnemyOnRockfordMove(gameContext->rockFordY, gameContext->rockFordX);
 		mapUtils->map[gameContext->rockFordY][gameContext->rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (gameContext->visibleX < SCROLL_BORDER - 1) {
 			if (gameContext->countX) {
@@ -144,7 +144,7 @@ void Game::prepareScroll()
 	}
 	else if (gameContext->currentDirection == UP) {
 		gameContext->rockFordY--;
-		checkEnemy(gameContext->rockFordY, gameContext->rockFordX);
+		checkEnemyOnRockfordMove(gameContext->rockFordY, gameContext->rockFordX);
 		mapUtils->map[gameContext->rockFordY][gameContext->rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (gameContext->visibleY < SCROLL_BORDER - 1) {
 			if (gameContext->countY) {
@@ -162,7 +162,7 @@ void Game::prepareScroll()
 	}
 	else if (gameContext->currentDirection == DOWN) {
 		gameContext->rockFordY++;
-		checkEnemy(gameContext->rockFordY, gameContext->rockFordX);
+		checkEnemyOnRockfordMove(gameContext->rockFordY, gameContext->rockFordX);
 		mapUtils->map[gameContext->rockFordY][gameContext->rockFordX].type = TRANSITIONAL_ROCKFORD;
 		if (gameContext->visibleY > TILES_DISPLAY_HEIGHT - SCROLL_BORDER) {
 			if (gameContext->countY < MAP_HEIGHT - TILES_DISPLAY_HEIGHT) {
@@ -699,12 +699,12 @@ void Game::checkRockford(int y, int x)
 	}
 }
 
-void Game::checkEnemy(int y, int x)
+void Game::checkEnemyOnRockfordMove(int y, int x)
 {
 	if (mapUtils->map[y][x].type == FIREFLY || mapUtils->map[y][x].type == BUTTERFLY) {
 		printf("HIT FIREFLY OR BUTTERFLY AT %d,%d\n", y, x);
 		map::Explosion *e = new map::Explosion;
-		*e = { (uint16_t)(x), (uint16_t)(y), mapUtils->map[y][x].type, 128 };
+		*e = { (uint16_t)(x), (uint16_t)(y), /*mapUtils->map[y][x].type*/ROCKFORD, 128 };
 		mapUtils->explosions.insert(e);
 	}
 }
