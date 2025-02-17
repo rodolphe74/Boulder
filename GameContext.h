@@ -23,6 +23,7 @@ public:
 	uint8_t quit = 0;
 	uint8_t scrollFlag = 0;
 	uint8_t keyFlag = 1;
+	uint8_t controlKey = 0;
 	int8_t shiftY = 0, shiftX = 0;
 	int8_t countX = 0, countY = 0;
 	int8_t rockFordY = 0, rockFordX = 0, previousRockFordX = 0, previousRockFordY = 0;

@@ -214,7 +214,7 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc)
 		if (map[y + 1][x].type == ROCKFORD || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY) {
 			printf("HIT ROCKFORD AT %d,%d\n", y + 1, x);
 			map::Explosion *e = new map::Explosion;
-			*e = { (uint16_t)x, (uint16_t)(y + 1), map[y + 1][x].type, 128 };
+			*e = { (uint16_t)x, (uint16_t)(y + 1), map[y + 1][x].type, map[y + 1][x].type == ROCKFORD ? (uint8_t) 128 : (uint8_t) 32 };
 			explosions.insert(e);
 		}
 

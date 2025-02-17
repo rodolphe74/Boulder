@@ -4,7 +4,7 @@ Game *Game::singleton = nullptr;
 
 Game *Game::getInstance()
 {
-	if (singleton== NULL) {
+	if (singleton == NULL) {
 		singleton = new Game();
 	}
 	return singleton;
@@ -81,6 +81,9 @@ void Game::keyPressed()
 	if (IsKeyDown(KEY_DOWN)) {
 		gameContext->currentDirection = DOWN;
 		gameContext->keyFlag = 0;
+	}
+	if (IsKeyDown(KEY_LEFT_CONTROL) && (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_DOWN))) {
+		gameContext->controlKey = 1;
 	}
 }
 
@@ -399,17 +402,41 @@ void Game::exitRockfordAt(int x, int y, int c) {
 
 void Game::doExplosion(map::Explosion &e)
 {
-	mapUtils->map[e.y - 1][e.x - 1].type = SPACE;
-	mapUtils->map[e.y - 1][e.x].type = SPACE;
-	mapUtils->map[e.y - 1][e.x + 1].type = SPACE;
+	int rockFordIsHere = checkRockfordInExplosionBox(e.y, e.x);
+	if (rockFordIsHere) {
+		printf("ROCKFORD IS HERE\n");
+		e.type = ROCKFORD;
+		e.count = 128;
+		e.x = gameContext->rockFordX;
+		e.y = gameContext->rockFordY;
+	}
 
-	mapUtils->map[e.y][e.x - 1].type = SPACE;
-	mapUtils->map[e.y][e.x].type = SPACE;
-	mapUtils->map[e.y][e.x + 1].type = SPACE;
+	if (e.type != BUTTERFLY) {
+		mapUtils->map[e.y - 1][e.x - 1].type = SPACE;
+		mapUtils->map[e.y - 1][e.x].type = SPACE;
+		mapUtils->map[e.y - 1][e.x + 1].type = SPACE;
 
-	mapUtils->map[e.y + 1][e.x - 1].type = SPACE;
-	mapUtils->map[e.y + 1][e.x].type = SPACE;
-	mapUtils->map[e.y + 1][e.x + 1].type = SPACE;
+		mapUtils->map[e.y][e.x - 1].type = SPACE;
+		mapUtils->map[e.y][e.x].type = SPACE;
+		mapUtils->map[e.y][e.x + 1].type = SPACE;
+
+		mapUtils->map[e.y + 1][e.x - 1].type = SPACE;
+		mapUtils->map[e.y + 1][e.x].type = SPACE;
+		mapUtils->map[e.y + 1][e.x + 1].type = SPACE;
+	}
+	else if (e.type == BUTTERFLY && e.count == 1) {
+		mapUtils->map[e.y - 1][e.x - 1].type = DIAMOND;
+		mapUtils->map[e.y - 1][e.x].type = DIAMOND;
+		mapUtils->map[e.y - 1][e.x + 1].type = DIAMOND;
+
+		mapUtils->map[e.y][e.x - 1].type = DIAMOND;
+		mapUtils->map[e.y][e.x].type = DIAMOND;
+		mapUtils->map[e.y][e.x + 1].type = DIAMOND;
+
+		mapUtils->map[e.y + 1][e.x - 1].type = DIAMOND;
+		mapUtils->map[e.y + 1][e.x].type = DIAMOND;
+		mapUtils->map[e.y + 1][e.x + 1].type = DIAMOND;
+	}
 
 	explodeAt(e.x - 1, e.y - 1, e.count);
 	explodeAt(e.x, e.y - 1, e.count);
@@ -544,7 +571,48 @@ void Game::gameLoopScreen()
 			gameContext->keyFlag = 1;
 		}
 		else {
-			prepareScroll();
+			if (!gameContext->controlKey) {
+				prepareScroll();
+			}
+			else if (gameContext->controlKey == 1 && gameContext->countFrames % 4 == 0) {
+				//printf("CONTROL :%d\n", gameContext->countFrames);
+				if (mapUtils->checkMove(gameContext)) {
+					checkDiamond();
+					switch (gameContext->currentDirection)
+					{
+					case RIGHT:
+						if (mapUtils->map[gameContext->rockFordY][gameContext->rockFordX + 1].type != BUTTERFLY && mapUtils->map[gameContext->rockFordY][gameContext->rockFordX + 1].type != FIREFLY) {
+							mapUtils->map[gameContext->rockFordY][gameContext->rockFordX + 1].type = SPACE;
+						}
+						break;
+					case LEFT:
+						if (mapUtils->map[gameContext->rockFordY][gameContext->rockFordX - 1].type != BUTTERFLY && mapUtils->map[gameContext->rockFordY][gameContext->rockFordX - 1].type != FIREFLY) {
+							mapUtils->map[gameContext->rockFordY][gameContext->rockFordX - 1].type = SPACE;
+						}
+						break;
+					case UP:
+						if (mapUtils->map[gameContext->rockFordY - 1][gameContext->rockFordX].type != BUTTERFLY && mapUtils->map[gameContext->rockFordY - 1][gameContext->rockFordX].type != FIREFLY) {
+							mapUtils->map[gameContext->rockFordY - 1][gameContext->rockFordX].type = SPACE;
+						}
+						break;
+					case DOWN:
+						if (mapUtils->map[gameContext->rockFordY + 1][gameContext->rockFordX].type != BUTTERFLY && mapUtils->map[gameContext->rockFordY + 1][gameContext->rockFordX].type != FIREFLY) {
+							mapUtils->map[gameContext->rockFordY + 1][gameContext->rockFordX].type = SPACE;
+						}
+						break;
+					default:
+						break;
+					}
+				}
+				gameContext->controlKey = 0;
+				gameContext->keyFlag = 1;
+				gameContext->currentDirection = 0;
+			}
+			else {
+				gameContext->controlKey = 0;
+				gameContext->keyFlag = 1;
+				gameContext->currentDirection = 0;
+			}
 		}
 	}
 
@@ -718,19 +786,39 @@ void Game::checkFalling(int y, int x)
 	}
 }
 
-void Game::eraseBox(int y, int x)
+int Game::checkRockfordInExplosionBox(int y, int x)
 {
-	mapUtils->map[y + gameContext->countY - 1][x + gameContext->countX - 1].type = SPACE;
-	mapUtils->map[y + gameContext->countY - 1][x + gameContext->countX].type = SPACE;
-	mapUtils->map[y + gameContext->countY - 1][x + gameContext->countX + 1].type = SPACE;
+	if (mapUtils->map[y - 1][x - 1].type == ROCKFORD) {
+		return 1;
+	}
+	if (mapUtils->map[y - 1][x].type == ROCKFORD) {
+		return 1;
+	}
+	if (mapUtils->map[y - 1][x + 1].type == ROCKFORD) {
+		return 1;
+	}
 
-	mapUtils->map[y + gameContext->countY][x + gameContext->countX - 1].type = SPACE;
-	mapUtils->map[y + gameContext->countY][x + gameContext->countX].type = SPACE;
-	mapUtils->map[y + gameContext->countY][x + gameContext->countX + 1].type = SPACE;
+	if (mapUtils->map[y][x - 1].type == ROCKFORD) {
+		return 1;
+	}
+	if (mapUtils->map[y][x].type == ROCKFORD) {
+		return 1;
+	}
+	if (mapUtils->map[y][x + 1].type == ROCKFORD) {
+		return 1;
+	}
 
-	mapUtils->map[y + gameContext->countY + 1][x + gameContext->countX - 1].type = SPACE;
-	mapUtils->map[y + gameContext->countY + 1][x + gameContext->countX].type = SPACE;
-	mapUtils->map[y + gameContext->countY + 1][x + gameContext->countX + 1].type = SPACE;
+	if (mapUtils->map[y + 1][x - 1].type == ROCKFORD) {
+		return 1;	    
+	}				    
+	if (mapUtils->map[y + 1][x].type == ROCKFORD) {
+		return 1;	    
+	}				    
+	if (mapUtils->map[y + 1][x + 1].type == ROCKFORD) {
+		return 1;
+	}
+
+	return 0;
 }
 
 void Game::animateFireflies()

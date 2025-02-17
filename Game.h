@@ -56,7 +56,7 @@ public:
 	void checkRockford(int y, int x);
 	void checkEnemyOnRockfordMove(int y, int x);
 	void checkFalling(int y, int x);
-	void eraseBox(int y, int x);
+	int checkRockfordInExplosionBox(int y, int x);
 	void animateFireflies();
 	void animateButterflies();
 };
