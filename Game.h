@@ -1,8 +1,9 @@
 #pragma once
-#include <stdint.h>
 #include "CaveDecoder.h"
-#include "MapUtils.h"
 #include "GameContext.h"
+#include "MapUtils.h"
+#include <chrono>
+#include <stdint.h>
 
 #define FRAMES_BEFORE_RESTLESS 64
 #define TILES_DISPLAY_BUFFER 1
@@ -59,5 +60,9 @@ public:
 	int checkRockfordInExplosionBox(int y, int x);
 	void animateFireflies();
 	void animateButterflies();
+	int countAmoebas();
+	int checkAmoebaGrow();
+	void transformsAmoebas(int which);
+	void amoebaGrow();
 };
 

@@ -47,7 +47,7 @@ void Game::initScrollVars()
 void Game::init()
 {
 	caveDecoder = CaveDecoder::getInstance();
-	caveDecoder->DecodeCave(CaveDecoder::cave4);
+	caveDecoder->DecodeCave(CaveDecoder::cave7);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet(gameContext);
 	mapUtils->convertCaveData(gameContext);
@@ -60,6 +60,9 @@ void Game::init()
 	gameContext->pause = 0;
 	currentScreen = GAMELOOP;
 	initScrollVars();
+	gameContext->startChrono = std::chrono::steady_clock::now();
+	gameContext->lastChrono = std::chrono::steady_clock::now();
+	gameContext->caveTime = caveDecoder->caveTime;
 }
 
 
@@ -354,6 +357,7 @@ void Game::animateRockford()
 		doFalls();
 		animateFireflies();
 		animateButterflies();
+		amoebaGrow();
 
 		mapUtils->drawMap(gameContext);
 		//printf("%d %d     %d %d      %d %d\n", rockFordX, rockFordY, countX, countY, visibleX, visibleY);
@@ -499,6 +503,11 @@ void Game::drawGameStats()
 	static char strDiamondsCount[20];
 	sprintf(strDiamondsCount, "%d/%d", gameContext->diamondsCount, caveDecoder->diamondsNeeded);
 	DrawText(strDiamondsCount, TILE_SIZE * ZOOM * 4, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+
+	DrawText("TIME", TILE_SIZE * ZOOM * 8, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
+	static char strTime[20];
+	sprintf(strTime, "%d", gameContext->caveTime);
+	DrawText(strTime, TILE_SIZE * ZOOM * 10, TILES_DISPLAY_HEIGHT * TILE_SIZE * ZOOM + ZOOM * 4, 20, DARKBLUE);
 }
 
 void Game::gameOverScreen()
@@ -530,8 +539,6 @@ void Game::initGame()
 	gameContext->countY = 0;
 	gameContext->shiftX = 0;
 	gameContext->shiftY = 0;
-	//rockFordX = 3;
-	//rockFordY = 2;
 	gameContext->rockfordShift = 0;
 	gameContext->previousRockFordX = gameContext->rockFordX;
 	gameContext->previousRockFordY = gameContext->rockFordY;
@@ -543,6 +550,8 @@ void Game::initGame()
 	gameContext->canExitFrame = 0;
 	gameContext->winFrame = 0;
 	gameContext->pause = 0;
+	gameContext->lastChrono = std::chrono::steady_clock::now();
+	gameContext->startChrono = std::chrono::steady_clock::now();
 	initScrollVars();
 }
 
@@ -640,6 +649,22 @@ void Game::gameLoopScreen()
 		doFalls();
 		animateFireflies();
 		animateButterflies();
+		amoebaGrow();
+	}
+
+	if (gameContext->countFalls % 16 == 0) {
+		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - gameContext->lastChrono).count() >= 1) {
+			gameContext->caveTime--;
+			gameContext->lastChrono = std::chrono::steady_clock::now();
+		}
+		if (gameContext->caveTime == 0) {
+			// gameOver
+			printf("NOT ENOUGH TIME ROCKFORD AT %d,%d\n", gameContext->rockFordY, gameContext->rockFordX);
+			map::Explosion *e = new map::Explosion;
+			*e = { (uint16_t)(gameContext->rockFordX), (uint16_t)(gameContext->rockFordY), ROCKFORD, 128 };
+			mapUtils->explosions.insert(e);
+		}
 	}
 
 	if (mapUtils->explosions.size()) {
@@ -809,11 +834,11 @@ int Game::checkRockfordInExplosionBox(int y, int x)
 	}
 
 	if (mapUtils->map[y + 1][x - 1].type == ROCKFORD) {
-		return 1;	    
-	}				    
+		return 1;
+	}
 	if (mapUtils->map[y + 1][x].type == ROCKFORD) {
-		return 1;	    
-	}				    
+		return 1;
+	}
 	if (mapUtils->map[y + 1][x + 1].type == ROCKFORD) {
 		return 1;
 	}
@@ -946,6 +971,99 @@ void Game::animateButterflies()
 					}
 					else {
 						mapUtils->map[i][j].direction = LEFT_DIRECTION[mapUtils->map[i][j].direction];
+					}
+				}
+			}
+		}
+	}
+}
+
+int Game::countAmoebas()
+{
+	uint16_t amoebasCount = 0;
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_HEIGHT; j++) {
+			if (mapUtils->map[i][j].type == AMOEBA) {
+				amoebasCount++;
+			}
+		}
+	}
+	printf("amoebas count:%d\n", amoebasCount);
+	if (amoebasCount > MAX_AMOEBAS) {
+		// transforms to rocks
+		transformsAmoebas(ROCK);
+		return 1;
+	}
+	return 0;
+}
+
+int Game::checkAmoebaGrow()
+{
+	uint16_t countGrows = 0;
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (mapUtils->map[i][j].type == AMOEBA) {
+				if (j > 0 && (mapUtils->map[i][j - 1].type == GRASS || mapUtils->map[i][j - 1].type == SPACE)) {
+					return 1;
+				}
+				else if (j < MAP_WIDTH - 1 && (mapUtils->map[i][j + 1].type == GRASS || mapUtils->map[i][j + 1].type == SPACE)) {
+					return 1;
+				}
+				else if (i > 0 && (mapUtils->map[i - 1][j].type == GRASS || mapUtils->map[i - 1][j].type == SPACE)) {
+					return 1;
+				}
+				else if (i < MAP_HEIGHT - 1 && (mapUtils->map[i + 1][j].type == GRASS || mapUtils->map[i + 1][j].type == SPACE)) {
+					return 1;
+				}
+			}
+		}
+	}
+	transformsAmoebas(DIAMOND);
+	return 0;
+}
+
+void Game::transformsAmoebas(int which)
+{
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (mapUtils->map[i][j].type == AMOEBA) {
+				mapUtils->map[i][j].type = which;
+				mapUtils->map[i][j].falling = STATIONARY;
+			}
+		}
+	}
+}
+
+void Game::amoebaGrow()
+{
+	if (countAmoebas()) {
+		// transformed to rocks
+		return;
+	}
+	if (!checkAmoebaGrow()) {
+		// transformed to diamonds
+		return;
+	}
+
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (mapUtils->map[i][j].type == AMOEBA) {
+				int growChance = rand() % 100 + 1;
+				int chrono = (int) std::chrono::duration_cast<std::chrono::seconds>(gameContext->lastChrono - gameContext->startChrono).count();
+				if (growChance <= (chrono < caveDecoder->amoebaTime ? 3 : 25)) {
+					int dir = rand() % 4 + 1;
+					printf("dir:%d\n", dir);
+					if (j > 0 && dir == LEFT && (mapUtils->map[i][j - 1].type == GRASS || mapUtils->map[i][j - 1].type == SPACE)) {
+						mapUtils->map[i][j - 1].type = AMOEBA;
+					}
+					else if (j < MAP_WIDTH - 1 && dir == RIGHT && (mapUtils->map[i][j + 1].type == GRASS || mapUtils->map[i][j + 1].type == SPACE)) {
+						mapUtils->map[i][j + 1].type = AMOEBA;
+					}
+					else if (i > 0 && dir == UP && (mapUtils->map[i - 1][j].type == GRASS || mapUtils->map[i - 1][j].type == SPACE)) {
+						mapUtils->map[i - 1][j].type = AMOEBA;
+					}
+					else if (i < MAP_HEIGHT - 1 && dir == DOWN && (mapUtils->map[i + 1][j].type == GRASS || mapUtils->map[i + 1][j].type == SPACE)) {
+						mapUtils->map[i + 1][j].type = AMOEBA;
 					}
 				}
 			}

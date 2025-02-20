@@ -1,7 +1,8 @@
 #pragma once
-#include <stdio.h>
-#include <stdint.h>
 #include "CaveDecoder.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <chrono>
 
 
 #define FRAMES_BEFORE_RESTLESS 64
@@ -45,5 +46,8 @@ public:
 	uint8_t exitX = 0, exitY = 0;
 	uint8_t won = 0;
 	uint8_t pause = 0;
+	uint16_t caveTime = 0;
+	std::chrono::steady_clock::time_point lastChrono;
+	std::chrono::steady_clock::time_point startChrono;
 };
 

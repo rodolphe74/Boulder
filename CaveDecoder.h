@@ -45,6 +45,8 @@ public:
 	UBYTE diamondWorth = 0;
 	UBYTE extraDiamondWorth = 0;
 	UBYTE diamondsNeeded = 0;
+	UBYTE amoebaTime = 0;
+	UBYTE caveTime = 0;
 
 	static CaveDecoder *getInstance();
 

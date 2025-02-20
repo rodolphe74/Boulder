@@ -48,6 +48,9 @@ void MapUtils::convertCaveData(GameContext *gc)
 			case 'B':
 				map[i][j] = { BUTTERFLY, STATIONARY, 0, LEFT };
 				break;
+			case 'a':
+				map[i][j] = { AMOEBA, STATIONARY };
+				break;
 			default:
 				printf("Unknown:%c at %d,%d\n", CaveDecoder::caveData[j][i + 2], j, i + 2);
 				break;
@@ -293,6 +296,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	preOut = { 16 * 0, 16 * 8, 16, 16, 0, &tiles };
 	firefly = { 16 * 9, 16 * 8, 16, 16, 1, &tiles };
 	butterfly = { 16 * 10, 16 * 8, 16, 16, 1, &tiles };
+	amoeba = { 16 * 7, 16 * 8, 16, 16, 1, &tiles };
 
 	matchSprite[BIGWALL] = &bigWall;
 	matchSprite[WALL] = &wall;
@@ -308,6 +312,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchSprite[WIN_ROCKFORD] = &winRockford;
 	matchSprite[FIREFLY] = &firefly;
 	matchSprite[BUTTERFLY] = &butterfly;
+	matchSprite[AMOEBA] = &amoeba;
 
 	gc->countX = 0;
 	gc->countY = 0;
@@ -386,6 +391,11 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	butterfly1 = { 16 * 10, 16 * 9, 16, 16, 0, &tiles };
 	butterfly2 = { 16 * 10, 16 * 10, 16, 16, 0, &tiles };
 	butterfly3 = { 16 * 10, 16 * 11, 16, 16, 0, &tiles };
+
+	amoeba0 = { 16 * 7, 16 * 8, 16, 16, 0, &tiles };
+	amoeba1 = { 16 * 7, 16 * 9, 16, 16, 0, &tiles };
+	amoeba2 = { 16 * 7, 16 * 10, 16, 16, 0, &tiles };
+	amoeba3 = { 16 * 7, 16 * 11, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -834,6 +844,40 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchAnimatedSprite[BUTTERFLY].anim[0][30] = &butterfly3;
 	matchAnimatedSprite[BUTTERFLY].anim[0][31] = &butterfly3;
 
+	// amoeba
+	matchAnimatedSprite[AMOEBA].anim[0][0] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][1] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][2] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][3] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][4] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][5] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][6] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][7] = &amoeba0;
+	matchAnimatedSprite[AMOEBA].anim[0][8] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][9] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][10] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][11] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][12] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][13] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][14] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][15] = &amoeba1;
+	matchAnimatedSprite[AMOEBA].anim[0][16] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][17] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][18] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][19] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][20] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][21] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][22] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][23] = &amoeba2;
+	matchAnimatedSprite[AMOEBA].anim[0][24] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][25] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][26] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][27] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][28] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][29] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][30] = &amoeba3;
+	matchAnimatedSprite[AMOEBA].anim[0][31] = &amoeba3;
+
 	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
 	matchAnimatedSprite[ROCKFORD].animCount = 12;
@@ -870,6 +914,9 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 
 	matchAnimatedSprite[BUTTERFLY].currentAnim = 0;
 	matchAnimatedSprite[BUTTERFLY].animCount = 32;
+
+	matchAnimatedSprite[AMOEBA].currentAnim = 0;
+	matchAnimatedSprite[AMOEBA].animCount = 32;
 }
 
 

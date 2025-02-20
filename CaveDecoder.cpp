@@ -298,6 +298,12 @@ void CaveDecoder::DecodeCave(const UBYTE *aCaveData)
 	RandSeed1 = 0;
 	RandSeed2 = aCaveData[4];
 
+	// Amoeba time
+	amoebaTime = aCaveData[1];
+
+	// Cave time
+	caveTime = aCaveData[14];
+
 	// Diamonds stats
 	diamondWorth = aCaveData[2];
 	extraDiamondWorth = aCaveData[3];
