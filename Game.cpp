@@ -63,6 +63,7 @@ void Game::init()
 	gameContext->startChrono = std::chrono::steady_clock::now();
 	gameContext->lastChrono = std::chrono::steady_clock::now();
 	gameContext->caveTime = caveDecoder->caveTime;
+	gameContext->magicWallOn = 0;
 }
 
 
@@ -552,6 +553,7 @@ void Game::initGame()
 	gameContext->pause = 0;
 	gameContext->lastChrono = std::chrono::steady_clock::now();
 	gameContext->startChrono = std::chrono::steady_clock::now();
+	gameContext->magicWallOn = 0;
 	initScrollVars();
 }
 
@@ -988,7 +990,7 @@ int Game::countAmoebas()
 			}
 		}
 	}
-	printf("amoebas count:%d\n", amoebasCount);
+	//printf("amoebas count:%d\n", amoebasCount);
 	if (amoebasCount > MAX_AMOEBAS) {
 		// transforms to rocks
 		transformsAmoebas(ROCK);

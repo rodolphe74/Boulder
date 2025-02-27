@@ -195,7 +195,7 @@ void MapUtils::move(int x, int y, int direction)
 
 void MapUtils::scanBouldersAndDiamonds(int x, int y)
 {
-	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY) && map[y][x].falling == STATIONARY) {
+	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY || (map[y + 1][x].type == MAGIC_WALL)) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = FALL;
 	}
 
@@ -207,7 +207,7 @@ void MapUtils::scanBouldersAndDiamonds(int x, int y)
 		map[y][x].falling = ROLL_RIGHT;
 	}
 
-	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD && map[y + 1][x].type != BUTTERFLY && map[y + 1][x].type != FIREFLY) && map[y][x].falling == FALL) {
+	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD && map[y + 1][x].type != BUTTERFLY && map[y + 1][x].type != FIREFLY && (map[y + 1][x].type != MAGIC_WALL)) && map[y][x].falling == FALL) {
 		map[y][x].falling = STATIONARY;
 	}
 
@@ -222,6 +222,19 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc)
 			map::Explosion *e = new map::Explosion;
 			*e = { (uint16_t)x, (uint16_t)(y + 1), map[y + 1][x].type, map[y + 1][x].type == ROCKFORD ? (uint8_t) 128 : (uint8_t) 32 };
 			explosions.insert(e);
+		}
+
+		if (map[y][x].type == ROCK && map[y + 1][x].type == MAGIC_WALL) {
+			// boulder disappears
+			map[y][x].type = SPACE;
+			map[y][x].falling = STATIONARY;
+			// check space under
+			if (map[y + 2][x].type == SPACE) {
+				map[y + 2][x].type = DIAMOND;
+				map[y + 2][x].falling = STATIONARY;
+				map[y + 2][x].mark = 1;
+			}
+			return;
 		}
 
 		map[y + 1][x].type = map[y][x].type;
