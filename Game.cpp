@@ -47,7 +47,7 @@ void Game::initScrollVars()
 void Game::init()
 {
 	caveDecoder = CaveDecoder::getInstance();
-	caveDecoder->DecodeCave(CaveDecoder::cave7);
+	caveDecoder->DecodeCave(CaveDecoder::cave8);
 	mapUtils = MapUtils::getInstance();
 	mapUtils->cutTilesSheet(gameContext);
 	mapUtils->convertCaveData(gameContext);
@@ -531,7 +531,7 @@ void Game::gameWinScreen()
 
 void Game::initGame()
 {
-	caveDecoder->DecodeCave(CaveDecoder::cave4);
+	caveDecoder->DecodeCave(CaveDecoder::cave8);
 	mapUtils->convertCaveData(gameContext);
 	mapUtils->preOut.isAnim = 0;
 	gameContext->gameOver = 0;

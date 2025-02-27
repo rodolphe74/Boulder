@@ -43,6 +43,7 @@
 #define UNKNOWN 13
 #define BUTTERFLY 14
 #define AMOEBA 15
+#define MAGIC_WALL 16
 
 #define MAX_AMOEBAS 200
 
@@ -101,6 +102,7 @@ public:
 	static void releaseInstance();
 
 	map::Sprite bigWall, wall, grass, space, diamond, rock, rockFord, explode, preOut, winRockford, firefly, butterfly, amoeba;
+	map::Sprite magicWall;
 	map::Sprite waitRockford0, waitRockford1, waitRockford2, waitRockford3;
 	map::Sprite upRockford0, upRockford1, upRockford2, upRockford3;
 	map::Sprite downRockford0, downRockford1, downRockford2, downRockford3;
@@ -117,6 +119,7 @@ public:
 	map::Sprite firefly0, firefly1, firefly2, firefly3;
 	map::Sprite butterfly0, butterfly1, butterfly2, butterfly3;
 	map::Sprite amoeba0, amoeba1, amoeba2, amoeba3;
+	map::Sprite magicWall0, magicWall1, magicWall2, magicWall3;
 
 	map::Object map[MAP_HEIGHT][MAP_WIDTH];
 	map::Object previousMap[MAP_HEIGHT][MAP_WIDTH];

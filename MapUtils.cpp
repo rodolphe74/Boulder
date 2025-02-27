@@ -51,6 +51,9 @@ void MapUtils::convertCaveData(GameContext *gc)
 			case 'a':
 				map[i][j] = { AMOEBA, STATIONARY };
 				break;
+			case 'm':
+				map[i][j] = { MAGIC_WALL, STATIONARY };
+				break;
 			default:
 				printf("Unknown:%c at %d,%d\n", CaveDecoder::caveData[j][i + 2], j, i + 2);
 				break;
@@ -88,22 +91,22 @@ void MapUtils::drawMap(GameContext *gc)
 int MapUtils::checkMove(GameContext *gc)
 {
 	if (gc->currentDirection == LEFT && gc->rockFordX > 0 &&
-		(map[gc->rockFordY][gc->rockFordX - 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX - 1].type == WALL || map[gc->rockFordY][gc->rockFordX - 1].type == ROCK)) {
+		(map[gc->rockFordY][gc->rockFordX - 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX - 1].type == WALL || map[gc->rockFordY][gc->rockFordX - 1].type == ROCK || map[gc->rockFordY][gc->rockFordX - 1].type == MAGIC_WALL)) {
 		return 0;
 	}
 
 	else if (gc->currentDirection == RIGHT && gc->rockFordX < MAP_WIDTH - 1 &&
-		(map[gc->rockFordY][gc->rockFordX + 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX + 1].type == WALL || map[gc->rockFordY][gc->rockFordX + 1].type == ROCK)) {
+		(map[gc->rockFordY][gc->rockFordX + 1].type == BIGWALL || map[gc->rockFordY][gc->rockFordX + 1].type == WALL || map[gc->rockFordY][gc->rockFordX + 1].type == ROCK || map[gc->rockFordY][gc->rockFordX + 1].type == MAGIC_WALL)) {
 		return 0;
 	}
 
 	else if (gc->currentDirection == UP && gc->rockFordY > 0 &&
-		(map[gc->rockFordY - 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY - 1][gc->rockFordX].type == WALL || map[gc->rockFordY - 1][gc->rockFordX].type == ROCK)) {
+		(map[gc->rockFordY - 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY - 1][gc->rockFordX].type == WALL || map[gc->rockFordY - 1][gc->rockFordX].type == ROCK || map[gc->rockFordY - 1][gc->rockFordX].type == MAGIC_WALL)) {
 		return 0;
 	}
 
 	else if (gc->currentDirection == DOWN && gc->rockFordY < MAP_HEIGHT - 1 &&
-		(map[gc->rockFordY + 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY + 1][gc->rockFordX].type == WALL || map[gc->rockFordY + 1][gc->rockFordX].type == ROCK)) {
+		(map[gc->rockFordY + 1][gc->rockFordX].type == BIGWALL || map[gc->rockFordY + 1][gc->rockFordX].type == WALL || map[gc->rockFordY + 1][gc->rockFordX].type == ROCK || map[gc->rockFordY + 1][gc->rockFordX - 1].type == MAGIC_WALL)) {
 		return 0;
 	}
 	return 1;
@@ -297,6 +300,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	firefly = { 16 * 9, 16 * 8, 16, 16, 1, &tiles };
 	butterfly = { 16 * 10, 16 * 8, 16, 16, 1, &tiles };
 	amoeba = { 16 * 7, 16 * 8, 16, 16, 1, &tiles };
+	magicWall = { 16 * 6, 16 * 8, 16, 16, 0, &tiles };
 
 	matchSprite[BIGWALL] = &bigWall;
 	matchSprite[WALL] = &wall;
@@ -313,6 +317,7 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchSprite[FIREFLY] = &firefly;
 	matchSprite[BUTTERFLY] = &butterfly;
 	matchSprite[AMOEBA] = &amoeba;
+	matchSprite[MAGIC_WALL] = &magicWall;
 
 	gc->countX = 0;
 	gc->countY = 0;
@@ -396,6 +401,11 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	amoeba1 = { 16 * 7, 16 * 9, 16, 16, 0, &tiles };
 	amoeba2 = { 16 * 7, 16 * 10, 16, 16, 0, &tiles };
 	amoeba3 = { 16 * 7, 16 * 11, 16, 16, 0, &tiles };
+
+	magicWall0 = { 16 * 6, 16 * 8, 16, 16, 0, &tiles };
+	magicWall1 = { 16 * 6, 16 * 9, 16, 16, 0, &tiles };
+	magicWall2 = { 16 * 6, 16 * 10, 16, 16, 0, &tiles };
+	magicWall3 = { 16 * 6, 16 * 11, 16, 16, 0, &tiles };
 
 
 	// restless
@@ -878,6 +888,40 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 	matchAnimatedSprite[AMOEBA].anim[0][30] = &amoeba3;
 	matchAnimatedSprite[AMOEBA].anim[0][31] = &amoeba3;
 
+	// magic wall
+	matchAnimatedSprite[MAGIC_WALL].anim[0][0] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][1] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][2] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][3] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][4] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][5] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][6] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][7] = &magicWall0;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][8] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][9] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][10] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][11] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][12] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][13] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][14] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][15] = &magicWall1;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][16] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][17] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][18] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][19] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][20] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][21] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][22] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][23] = &magicWall2;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][24] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][25] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][26] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][27] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][28] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][29] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][30] = &magicWall3;
+	matchAnimatedSprite[MAGIC_WALL].anim[0][31] = &magicWall3;
+
 	// init
 	matchAnimatedSprite[ROCKFORD].currentAnim = 5;
 	matchAnimatedSprite[ROCKFORD].animCount = 12;
@@ -917,6 +961,9 @@ void MapUtils::cutTilesSheet(GameContext *gc)
 
 	matchAnimatedSprite[AMOEBA].currentAnim = 0;
 	matchAnimatedSprite[AMOEBA].animCount = 32;
+
+	matchAnimatedSprite[MAGIC_WALL].currentAnim = 0;
+	matchAnimatedSprite[MAGIC_WALL].animCount = 32;
 }
 
 
