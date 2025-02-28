@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <stdlib.h>
 
 Game *Game::singleton = nullptr;
 
