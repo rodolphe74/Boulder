@@ -195,7 +195,9 @@ void MapUtils::move(int x, int y, int direction)
 
 void MapUtils::scanBouldersAndDiamonds(int x, int y)
 {
-	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY || (map[y + 1][x].type == MAGIC_WALL)) && map[y][x].falling == STATIONARY) {
+	GameContext *gameContext = GameContext::getInstance();
+
+	if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type == SPACE || map[y + 1][x].type == TRANSITIONAL_SPACE || map[y + 1][x].type == BUTTERFLY || map[y + 1][x].type == FIREFLY || (gameContext->magicWallOn != 2 && map[y + 1][x].type == MAGIC_WALL)) && map[y][x].falling == STATIONARY) {
 		map[y][x].falling = FALL;
 	}
 
@@ -207,7 +209,7 @@ void MapUtils::scanBouldersAndDiamonds(int x, int y)
 		map[y][x].falling = ROLL_RIGHT;
 	}
 
-	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD && map[y + 1][x].type != BUTTERFLY && map[y + 1][x].type != FIREFLY && (map[y + 1][x].type != MAGIC_WALL)) && map[y][x].falling == FALL) {
+	else if ((map[y][x].type == ROCK || map[y][x].type == DIAMOND) && (map[y + 1][x].type != SPACE && map[y + 1][x].type != TRANSITIONAL_SPACE && map[y + 1][x].type != TRANSITIONAL_ROCKFORD && map[y + 1][x].type != ROCKFORD && map[y + 1][x].type != BUTTERFLY && map[y + 1][x].type != FIREFLY && ((gameContext->magicWallOn == 2 && map[y + 1][x].type == MAGIC_WALL) || map[y + 1][x].type != MAGIC_WALL)) && map[y][x].falling == FALL) {
 		map[y][x].falling = STATIONARY;
 	}
 
@@ -225,6 +227,15 @@ void MapUtils::updateFallingBouldersAndDiamonds(int x, int y, GameContext *gc)
 		}
 
 		if (map[y][x].type == ROCK && map[y + 1][x].type == MAGIC_WALL) {
+
+			GameContext *gameContext = GameContext::getInstance();
+			if (gameContext->magicWallOn == 0) {
+				gameContext->magicWallOn = 1;
+				gameContext->magicWallStartChrono = std::chrono::steady_clock::now();
+				map::Sprite *sprite = matchSprite[MAGIC_WALL];
+				sprite->isAnim = 1;
+			}
+
 			// boulder disappears
 			map[y][x].type = SPACE;
 			map[y][x].falling = STATIONARY;

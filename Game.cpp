@@ -674,6 +674,15 @@ void Game::gameLoopScreen()
 		iterateExplosions();
 	}
 
+	if (gameContext->magicWallOn == 1) {
+		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - gameContext->magicWallStartChrono).count() >= caveDecoder->amoebaTime) {
+			gameContext->magicWallOn = 2;
+			map::Sprite *sprite = mapUtils->matchSprite[MAGIC_WALL];
+			sprite->isAnim = 0;
+		}
+	}
+
 	if (gameContext->canExit) {
 		showExit();
 	}

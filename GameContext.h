@@ -48,6 +48,7 @@ public:
 	uint8_t pause = 0;
 	uint16_t caveTime = 0;
 	uint8_t magicWallOn = 0;
+	std::chrono::steady_clock::time_point magicWallStartChrono;
 	std::chrono::steady_clock::time_point lastChrono;
 	std::chrono::steady_clock::time_point startChrono;
 };
